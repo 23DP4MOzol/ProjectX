@@ -14,4 +14,4 @@
 ### 1. Klonējiet repozitoriju
 Izmantojiet šādu komandu, lai klonētu šo repozitoriju uz savu datoru:
 ```bash
-git clone https://github.com/23DP4MOzol/Gala_Projekts
+git clone https://github.com/23DP4MOzol/ProjectX
