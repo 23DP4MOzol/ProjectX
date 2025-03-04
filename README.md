@@ -2,7 +2,7 @@
 
 Šī ir Python lietotne, kas ļauj lietotājiem plānot un sekot līdzi saviem sporta treniņiem, analizēt progresu un saņemt ieteikumus nākamajiem treniņiem, balstoties uz iepriekšējiem rezultātiem. Lietotāji varēs pievienot treniņus, norādīt vingrinājumus, intensitāti, reps, sets un svaru.
 
-## **Libraries** kādus Libraries mēs izmantojām projektā :
+## Kādus Libraries mēs izmantojām projektā? :
   - **Tkinter**: Grafiskās lietotāja saskarnes izveidei.
   - **JSON**: Datu apstrādei un saglabāšanai.
   - **MessageBox (Tkinter)**: Lai parādītu informācijas ziņojumus vai kļūdu paziņojumus.
