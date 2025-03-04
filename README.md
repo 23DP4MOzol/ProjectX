@@ -12,6 +12,6 @@
 ## Instalēšana
 
 ### 1. Klonējiet repozitoriju
-Izmantojiet šādu komandu, lai klonētu šo repozitoriju uz savu datoru:
+Clonošanas links:
 ```bash
 git clone https://github.com/23DP4MOzol/ProjectX
