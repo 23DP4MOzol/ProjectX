@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from utils.functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings
+from functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings
 
 # Galvenais logs
 window = tk.Tk()
