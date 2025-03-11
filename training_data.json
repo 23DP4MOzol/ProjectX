@@ -1,0 +1,18 @@
+[
+    {
+        "datums": "2025-03-01",
+        "vingrinājums": "Squats",
+        "komplekti": 4,
+        "atkārtojumi": 12,
+        "svars": 80,
+        "piezīmes": "Jāuzlabo tehnika"
+    },
+    {
+        "datums": "2025-03-02",
+        "vingrinājums": "Deadlifts",
+        "komplekti": 3,
+        "atkārtojumi": 10,
+        "svars": 100,
+        "piezīmes": "Labs progres"
+    }
+]

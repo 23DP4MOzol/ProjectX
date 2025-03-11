@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+from utils.functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings
 
 # Galvenais logs
 window = tk.Tk()
@@ -29,9 +31,12 @@ tk.Label(window, text="Piezīmes:").grid(row=5, column=0, sticky="w")
 comments_entry = tk.Entry(window)
 comments_entry.grid(row=5, column=1)
 
-# Pogu, lai pievienotu treniņu
-add_button = tk.Button(window, text="Pievienot treniņu")
-add_button.grid(row=6, column=0, columnspan=2)
+# Funkcijas saistīšana ar pogām
+tk.Button(window, text="Pievienot treniņu", command=lambda: add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry)).grid(row=6, column=0, columnspan=2)
+tk.Button(window, text="Rediģēt treniņu", command=edit_training).grid(row=7, column=0, columnspan=2)
+tk.Button(window, text="Dzēst treniņu", command=delete_training).grid(row=8, column=0, columnspan=2)
+tk.Button(window, text="Skatīt treniņus", command=view_trainings).grid(row=9, column=0, columnspan=2)
+tk.Button(window, text="Statistika", command=show_statistics).grid(row=10, column=0, columnspan=2)
+tk.Button(window, text="Meklēt treniņus", command=search_trainings).grid(row=11, column=0, columnspan=2)
 
-# Sākt GUI
 window.mainloop()
