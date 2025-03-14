@@ -41,3 +41,5 @@ tk.Button(window, text="Meklēt treniņus", command=search_trainings).grid(row=1
 tk.Button(window, text="Ieteikums nākamajam treniņam", command=get_recommendation).grid(row=12, column=0, columnspan=2)
 
 window.mainloop()
+
+
