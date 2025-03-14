@@ -1,7 +1,8 @@
-
+from curses import window
 import json
 import datetime
-from tkinter import messagebox
+from tkinter import Tk, messagebox
+import tkinter
 
 # Funkcija, lai pievienotu treniņu
 def add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry):
@@ -36,8 +37,45 @@ def add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entr
         messagebox.showerror("Kļūda", "Svars, komplekti un atkārtojumi jābūt skaitļiem, un tiem jābūt pozitīviem!")
         return
 # Saglabāt treniņu datus
+    training_data = {
+        "datums": date,
+        "vingrinājums": exercise,
+        "komplekti": sets,
+        "atkārtojumi": reps,
+        "svars": weight,
+        "piezīmes": comments
+    }
 
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        all_trainings = []
+
+    all_trainings.append(training_data)
+
+    with open("training_data.json", "w") as file:
+        json.dump(all_trainings, file, indent=4)
+
+    messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi pievienots!")
 # Funkcija, lai skatītos iepriekšējos treniņus
+def view_trainings():
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+            if not all_trainings:
+                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
+                return
+
+            view_window = Tk.Toplevel(window)
+            view_window.title("Iepriekšējie treniņi")
+            for i, training in enumerate(all_trainings, 1):
+                tkinter.Label(view_window, text=f"{i}. {training['datums']}: {training['vingrinājums']} ({training['komplekti']} komplekti, {training['atkārtojumi']} atkārtojumi, {training['svars']} kg)").pack()
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+
+# Funkcija, lai iegūtu ieteikumu nākamajam treniņam
 
 # Funkcija, lai rediģētu treniņu
 
