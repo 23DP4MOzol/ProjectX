@@ -76,6 +76,21 @@ def view_trainings():
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai iegūtu ieteikumu nākamajam treniņam
+def get_recommendation():
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+            if not all_trainings:
+                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
+                return
+
+            last_training = all_trainings[-1]
+            recommended_weight = float(last_training['svars']) * 1.05  # Palielina svaru par 5%
+
+            messagebox.showinfo("Ieteikums", f"Ieteiktais svars nākamajam treniņam: {recommended_weight:.2f} kg")
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai rediģētu treniņu
 
