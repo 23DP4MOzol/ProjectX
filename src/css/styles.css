@@ -1,0 +1,252 @@
+/* Resetting margins and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and background */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #283c58, #6c4f96); /* Keeping the original background */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    color: white;
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+/* Container for all elements */
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: 1400px;
+    flex-wrap: wrap;
+}
+
+/* Sidebar styles */
+.sidebar {
+    background-color: #1d2a3d;
+    width: 270px;
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 60px 30px;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    border-radius: 10px;
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar:hover {
+    width: 300px; /* Expands sidebar on hover */
+}
+
+.sidebar ul {
+    list-style: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.sidebar ul li {
+    margin: 25px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+    color: #b156e7;
+    transform: scale(1.05); /* Add scaling effect for better interactivity */
+}
+
+/* Main Content */
+.content {
+    margin-left: 270px;
+    padding: 40px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Section Styling */
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    padding: 80px 50px;
+    min-height: 100vh;
+    transition: transform 0.3s ease;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Subtle shadow effect */
+    border-radius: 10px;
+}
+
+/* Section Titles */
+h1, h2 {
+    font-size: 4rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+h1:hover, h2:hover {
+    color: #b156e7; /* Hover effect on headers */
+}
+
+/* Highlighted Text */
+.highlight {
+    color: #b156e7;
+}
+
+/* Description text styling */
+p {
+    font-size: 1.3rem;
+    margin-top: 15px;
+    line-height: 1.8;
+    color: #e0e0e0;
+    font-weight: 400;
+    text-align: center;
+    max-width: 800px;
+}
+
+/* Button Styles */
+.download-btn {
+    background: linear-gradient(135deg, #b156e7, #8a3dcb); /* Gradient effect for buttons */
+    color: white;
+    padding: 15px 40px;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 30px;
+    margin-top: 30px;
+    cursor: pointer;
+    box-shadow: 0px 12px 18px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.download-btn:hover {
+    background: linear-gradient(135deg, #8a3dcb, #b156e7); /* Button hover gradient effect */
+    box-shadow: 0px 14px 25px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05); /* Hover scaling effect */
+}
+
+.download-btn:focus {
+    outline: none;
+}
+
+/* Contacts Section Styles */
+#contacts form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+#contacts label {
+    font-size: 1.3rem;
+    color: white;
+}
+
+#contacts input[type="email"] {
+    padding: 15px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    width: 300px;
+    margin-bottom: 10px;
+    background-color: #f1f1f1;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+#contacts input[type="email"]:focus {
+    border: 2px solid #b156e7;
+    outline: none;
+    background-color: #fff; /* Focus background change */
+}
+
+#contacts button {
+    background-color: #b156e7;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    width: 180px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#contacts button:hover {
+    background-color: #8a3dcb;
+    transform: translateY(-3px); /* Slight lift effect */
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 220px;
+        padding: 25px 20px;
+        position: static;
+        transform: none;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 20px;
+        height: auto;
+    }
+
+    h1, h2 {
+        font-size: 2.5rem;
+    }
+
+    .download-btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+    }
+
+    #contacts input[type="email"], #contacts button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    h1, h2 {
+        font-size: 1.8rem;
+    }
+
+    .download-btn {
+        padding: 10px 25px;
+        font-size: 1rem;
+    }
+
+    #contacts input[type="email"], #contacts button {
+        padding: 10px;
+    }
+}
