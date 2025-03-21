@@ -93,6 +93,37 @@ def get_recommendation():
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai rediģētu treniņu
+def edit_training():
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+            # Ja nav treniņu datu
+            if not all_trainings:
+                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
+                return
+
+            # Pārbaudīt, vai lietotājs izvēlējās treniņu
+            training_index = int(input("Izvēlies treniņa numuru, kuru vēlies rediģēt: ")) - 1
+            if training_index < 0 or training_index >= len(all_trainings):
+                messagebox.showerror("Kļūda", "Nederīgs treniņa numurs!")
+                return
+
+            selected_training = all_trainings[training_index]
+            new_weight = input(f"Jaunais svars (kg) ({selected_training['svars']}): ")
+            new_sets = input(f"Jauni komplekti ({selected_training['komplekti']}): ")
+            new_reps = input(f"Jauni atkārtojumi ({selected_training['atkārtojumi']}): ")
+
+            selected_training['svars'] = float(new_weight if new_weight else selected_training['svars'])
+            selected_training['komplekti'] = int(new_sets if new_sets else selected_training['komplekti'])
+            selected_training['atkārtojumi'] = int(new_reps if new_reps else selected_training['atkārtojumi'])
+
+            with open("training_data.json", "w") as file:
+                json.dump(all_trainings, file, indent=4)
+
+            messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi rediģēts!")
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai dzēstu treniņu
 
