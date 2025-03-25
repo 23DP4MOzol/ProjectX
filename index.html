@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
+    <!-- Hamburger Menu for Mobile -->
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+
     <div class="container">
         <!-- Sidebar -->
         <nav class="sidebar">
@@ -20,58 +23,55 @@
         </nav>
 
         <!-- Main Content -->
-            <section id="home">
-                <div class="section-content">
-                    <h1>Sports <span class="highlight">5×30</span></h1>
-                    <p>Sporta Trenīnu Plānošanas Lietotne</p>
-                    <a href="#download">
-                        <button class="download-btn">Lejupielādēt</button>
-                    </a>
-                </div>
-            </section>
+        <section id="home">
+            <div class="section-content">
+                <h1>Sports <span class="highlight">5×30</span></h1>
+                <p>Sporta Trenīnu Plānošanas Lietotne</p>
+                <a href="#download">
+                    <button class="download-btn">Lejupielādēt</button>
+                </a>
+            </div>
+        </section>
 
-            <!-- Lejupielāde Section -->
-            <section id="download">
-                <div class="section-content">
-                    <h2>Lejupielāde</h2>
-                    <p>Iegūstiet lietotni un sāciet plānot sporta treniņus.</p>
-                    <a href="/Download_map.zip" download="5x30.zip">
-                        <button class="download-btn">Lejupielādēt tagad</button>
-                    </a>
-                </div>
-            </section>
+        <!-- Lejupielāde Section -->
+        <section id="download">
+            <div class="section-content">
+                <h2>Lejupielāde</h2>
+                <p>Iegūstiet lietotni un sāciet plānot sporta treniņus.</p>
+                <a href="/Download_map.zip" download="5x30.zip">
+                    <button class="download-btn">Lejupielādēt tagad</button>
+                </a>
+            </div>
+        </section>
 
+        <!-- Images Section -->
+        <section id="images">
+            <div class="section-content">
+                <h2>Bildes</h2>
+                <p>Iepazīstieties ar attēliem, kas saistīti ar sporta treniņu plānošanu.</p>
+            </div>
+        </section>
 
+        <!-- Contacts Section -->
+        <section id="contacts">
+            <div class="section-content">
+                <h2>Kontakti</h2>
+                <p>Sazinieties ar mums, lai iegūtu vairāk informācijas.</p>
+                <form>
+                    <label for="email">E-pasts:</label>
+                    <input type="email" id="email" name="email" required>
+                    <button type="submit">Iesniegt</button>
+                </form>
+            </div>
+        </section>
 
-            <!-- Images Section -->
-            <section id="images">
-                <div class="section-content">
-                    <h2>Bildes</h2>
-                    <p>Iepazīstieties ar attēliem, kas saistīti ar sporta treniņu plānošanu.</p>
-                </div>
-            </section>
-
-            <!-- Contacts Section -->
-            <section id="contacts">
-                <div class="section-content">
-                    <h2>Kontakti</h2>
-                    <p>Sazinieties ar mums, lai iegūtu vairāk informācijas.</p>
-                    <form>
-                        <label for="email">E-pasts:</label>
-                        <input type="email" id="email" name="email">
-                        <button type="submit">Iesniegt</button>
-                    </form>
-                </div>
-            </section>
-
-            <!-- About Section -->
-            <section id="about">
-                <div class="section-content">
-                    <h2>Par</h2>
-                    <p>Uzziniet vairāk par Sports 5×30 lietotni un tās funkcijām.</p>
-                </div>
-            </section>
-        </div>
+        <!-- About Section -->
+        <section id="about">
+            <div class="section-content">
+                <h2>Par</h2>
+                <p>Uzziniet vairāk par Sports 5×30 lietotni un tās funkcijām.</p>
+            </div>
+        </section>
     </div>
 
     <script src="src/js/script.js"></script>

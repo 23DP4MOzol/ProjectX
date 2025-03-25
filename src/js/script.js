@@ -8,3 +8,9 @@ document.querySelectorAll('.sidebar a').forEach(anchor => {
         });
     });
 });
+
+// Toggle Sidebar visibility for mobile
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('active');
+}
