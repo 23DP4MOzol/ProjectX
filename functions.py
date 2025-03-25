@@ -126,6 +126,29 @@ def edit_training():
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai dzēstu treniņu
+def delete_training():
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+            if not all_trainings:
+                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
+                return
+
+            # Pārbaudīt, vai lietotājs izvēlējās treniņu
+            training_index = int(input("Izvēlies treniņa numuru, kuru vēlies dzēst: ")) - 1
+            if training_index < 0 or training_index >= len(all_trainings):
+                messagebox.showerror("Kļūda", "Nederīgs treniņa numurs!")
+                return
+
+            del all_trainings[training_index]
+
+            with open("training_data.json", "w") as file:
+                json.dump(all_trainings, file, indent=4)
+
+            messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi izdzēsts!")
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai parādītu statistiku par treniņiem
 
