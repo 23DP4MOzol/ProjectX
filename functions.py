@@ -1,7 +1,7 @@
 from curses import window
 import json
 import datetime
-from tkinter import Tk, messagebox
+from tkinter import Tk, TkVersion, messagebox, ttk
 import tkinter
 
 # Funkcija, lai pievienotu treniņu
@@ -151,5 +151,23 @@ def delete_training():
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai parādītu statistiku par treniņiem
+def show_statistics():
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+            if not all_trainings:
+                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
+                return
+
+            total_sets = sum(training['komplekti'] for training in all_trainings)
+            total_reps = sum(training['atkārtojumi'] for training in all_trainings)
+            total_weight = sum(training['svars'] for training in all_trainings)
+
+            stats_window = TkVersion.Toplevel(window)
+            stats_window.title("Treniņu statistika")
+            ttk.Label(stats_window, text=f"Komplekts: {total_sets}, Atkārtojumi: {total_reps}, Svars: {total_weight} kg").pack()
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai veiktu treniņu vēstures meklēšanu
