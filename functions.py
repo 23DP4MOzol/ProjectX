@@ -171,3 +171,23 @@ def show_statistics():
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
 
 # Funkcija, lai veiktu treniņu vēstures meklēšanu
+
+def search_trainings():
+    search_term = input("Ievadi meklēšanas terminu (datums vai vingrinājums): ")
+
+    try:
+        with open("training_data.json", "r") as file:
+            all_trainings = json.load(file)
+
+            results = [training for training in all_trainings if search_term.lower() in training['datums'].lower() or search_term.lower() in training['vingrinājums'].lower()]
+
+            if results:
+                search_window = ttk._TtkCompound.Toplevel(window)
+                search_window.title("Meklēšanas rezultāti")
+                for training in results:
+                    ttk._TtkCompound.Label(search_window, text=f"{training['datums']}: {training['vingrinājums']} ({training['komplekti']} komplekti, {training['atkārtojumi']} atkārtojumi, {training['svars']} kg)").pack()
+            else:
+                messagebox.showinfo("Meklēšanas rezultāti", "Nav atrasti treniņi ar norādīto terminu!")
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
