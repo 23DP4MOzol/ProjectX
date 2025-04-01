@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from functions import add_training, delete_training, edit_training, search_trainings, show_statistics, view_trainings, get_recommendation#, edit_training, delete_training, show_statistics, search_trainings 
+from functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings, get_recommendation
 
 # Galvenais logs
 window = tk.Tk()
@@ -41,5 +41,3 @@ tk.Button(window, text="Meklēt treniņus", command=search_trainings).grid(row=1
 tk.Button(window, text="Ieteikums nākamajam treniņam", command=get_recommendation).grid(row=12, column=0, columnspan=2)
 
 window.mainloop()
-
-

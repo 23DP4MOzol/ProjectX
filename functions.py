@@ -1,193 +1,189 @@
-from curses import window
 import json
-import datetime
-from tkinter import Tk, TkVersion, messagebox, ttk
-import tkinter
+import tkinter as tk
+from tkinter import messagebox
 
-# Funkcija, lai pievienotu treniņu
+# Funkcija, lai pievienotu jaunu treniņu
 def add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry):
-    date = date_entry.get()
-    exercise = exercise_entry.get()
-    sets = sets_entry.get()
-    reps = reps_entry.get()
-    weight = weight_entry.get()
-    comments = comments_entry.get()
-
-    if not date or not exercise or not sets or not reps or not weight:
-        messagebox.showerror("Kļūda", "Lūdzu aizpildiet visus laukus!")
-        return
-
-    try:
-        
-        datetime.datetime.strptime(date, '%Y-%m-%d')
-        if datetime.datetime.strptime(date, '%Y-%m-%d') > datetime.datetime.now():
-            messagebox.showerror("Kļūda", "Datums nevar būt nākotnē!")
-            return
-    except ValueError:
-        messagebox.showerror("Kļūda", "Nepareizs datuma formāts!")
-        return
-
-    try:
-        weight = float(weight)
-        sets = int(sets)
-        reps = int(reps)
-        if weight < 0 or sets < 0 or reps < 0:
-            raise ValueError("Negatīvi skaitļi nav pieļaujami")
-    except ValueError:
-        messagebox.showerror("Kļūda", "Svars, komplekti un atkārtojumi jābūt skaitļiem, un tiem jābūt pozitīviem!")
-        return
-# Saglabāt treniņu datus
-    training_data = {
-        "datums": date,
-        "vingrinājums": exercise,
-        "komplekti": sets,
-        "atkārtojumi": reps,
-        "svars": weight,
-        "piezīmes": comments
+    new_training = {
+        "datums": date_entry.get(),
+        "vingrinājums": exercise_entry.get(),
+        "komplekti": sets_entry.get(),
+        "atkārtojumi": reps_entry.get(),
+        "svars": weight_entry.get(),
+        "piezīmes": comments_entry.get()
     }
 
     try:
-        with open("training_data.json", "r") as file:
+        with open("training_data.json", "r", encoding="utf-8") as file:
             all_trainings = json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
         all_trainings = []
 
-    all_trainings.append(training_data)
+    all_trainings.append(new_training)
 
-    with open("training_data.json", "w") as file:
+    with open("training_data.json", "w", encoding="utf-8") as file:
         json.dump(all_trainings, file, indent=4)
 
-    messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi pievienots!")
-# Funkcija, lai skatītos iepriekšējos treniņus
+    messagebox.showinfo("Veiksmīgi pievienots", "Jaunais treniņš ir veiksmīgi pievienots!")
+
+# Funkcija, lai skatītu visus treniņus
 def view_trainings():
     try:
-        with open("training_data.json", "r") as file:
+        with open("training_data.json", "r", encoding="utf-8") as file:
             all_trainings = json.load(file)
-            if not all_trainings:
-                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
-                return
-
-            view_window = Tk.Toplevel(window)
-            view_window.title("Iepriekšējie treniņi")
-            for i, training in enumerate(all_trainings, 1):
-                tkinter.Label(view_window, text=f"{i}. {training['datums']}: {training['vingrinājums']} ({training['komplekti']} komplekti, {training['atkārtojumi']} atkārtojumi, {training['svars']} kg)").pack()
-
     except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+        all_trainings = []
 
-# Funkcija, lai iegūtu ieteikumu nākamajam treniņam
-def get_recommendation():
+    # Izdrukā visus treniņus
+    for training in all_trainings:
+        print(f"Datums: {training['datums']}, Vingrinājums: {training['vingrinājums']}, Komplekts: {training['komplekti']}, Atkārtojumi: {training['atkārtojumi']}, Svars: {training['svars']}, Piezīmes: {training['piezīmes']}")
+
+# Funkcija, lai rediģētu esošu treniņu
+def edit_training(training_index, date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry):
     try:
-        with open("training_data.json", "r") as file:
+        with open("training_data.json", "r", encoding="utf-8") as file:
             all_trainings = json.load(file)
-            if not all_trainings:
-                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
-                return
-
-            last_training = all_trainings[-1]
-            recommended_weight = float(last_training['svars']) * 1.05  # Palielina svaru par 5%
-
-            messagebox.showinfo("Ieteikums", f"Ieteiktais svars nākamajam treniņam: {recommended_weight:.2f} kg")
-
     except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+        all_trainings = []
 
-# Funkcija, lai rediģētu treniņu
-def edit_training():
+    # Rediģē konkrētu treniņu
+    all_trainings[training_index]["datums"] = date_entry.get()
+    all_trainings[training_index]["vingrinājums"] = exercise_entry.get()
+    all_trainings[training_index]["komplekti"] = sets_entry.get()
+    all_trainings[training_index]["atkārtojumi"] = reps_entry.get()
+    all_trainings[training_index]["svars"] = weight_entry.get()
+    all_trainings[training_index]["piezīmes"] = comments_entry.get()
+
+    # Saglabā izmaiņas atpakaļ JSON failā
+    with open("training_data.json", "w", encoding="utf-8") as file:
+        json.dump(all_trainings, file, indent=4)
+
+    messagebox.showinfo("Veiksmīgi rediģēts", "Treniņš ir veiksmīgi rediģēts!")
+
+# Funkcija, lai izdzēstu treniņu
+def delete_training(training_index):
     try:
-        with open("training_data.json", "r") as file:
+        with open("training_data.json", "r", encoding="utf-8") as file:
             all_trainings = json.load(file)
-            # Ja nav treniņu datu
-            if not all_trainings:
-                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
-                return
-
-            # Pārbaudīt, vai lietotājs izvēlējās treniņu
-            training_index = int(input("Izvēlies treniņa numuru, kuru vēlies rediģēt: ")) - 1
-            if training_index < 0 or training_index >= len(all_trainings):
-                messagebox.showerror("Kļūda", "Nederīgs treniņa numurs!")
-                return
-
-            selected_training = all_trainings[training_index]
-            new_weight = input(f"Jaunais svars (kg) ({selected_training['svars']}): ")
-            new_sets = input(f"Jauni komplekti ({selected_training['komplekti']}): ")
-            new_reps = input(f"Jauni atkārtojumi ({selected_training['atkārtojumi']}): ")
-
-            selected_training['svars'] = float(new_weight if new_weight else selected_training['svars'])
-            selected_training['komplekti'] = int(new_sets if new_sets else selected_training['komplekti'])
-            selected_training['atkārtojumi'] = int(new_reps if new_reps else selected_training['atkārtojumi'])
-
-            with open("training_data.json", "w") as file:
-                json.dump(all_trainings, file, indent=4)
-
-            messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi rediģēts!")
-
     except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+        all_trainings = []
 
-# Funkcija, lai dzēstu treniņu
-def delete_training():
-    try:
-        with open("training_data.json", "r") as file:
-            all_trainings = json.load(file)
-            if not all_trainings:
-                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
-                return
+    # Dzēš izvēlēto treniņu
+    all_trainings.pop(training_index)
 
-            # Pārbaudīt, vai lietotājs izvēlējās treniņu
-            training_index = int(input("Izvēlies treniņa numuru, kuru vēlies dzēst: ")) - 1
-            if training_index < 0 or training_index >= len(all_trainings):
-                messagebox.showerror("Kļūda", "Nederīgs treniņa numurs!")
-                return
+    # Saglabā izmaiņas atpakaļ JSON failā
+    with open("training_data.json", "w", encoding="utf-8") as file:
+        json.dump(all_trainings, file, indent=4)
 
-            del all_trainings[training_index]
+    messagebox.showinfo("Veiksmīgi izdzēsts", "Treniņš ir veiksmīgi izdzēsts!")
 
-            with open("training_data.json", "w") as file:
-                json.dump(all_trainings, file, indent=4)
-
-            messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi izdzēsts!")
-
-    except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
-
-# Funkcija, lai parādītu statistiku par treniņiem
+# Funkcija, lai parādītu statistiku
 def show_statistics():
     try:
-        with open("training_data.json", "r") as file:
+        with open("training_data.json", "r", encoding="utf-8") as file:
             all_trainings = json.load(file)
-            if not all_trainings:
-                messagebox.showinfo("Brīdinājums", "Nav pieejami treniņu dati!")
-                return
-
-            total_sets = sum(training['komplekti'] for training in all_trainings)
-            total_reps = sum(training['atkārtojumi'] for training in all_trainings)
-            total_weight = sum(training['svars'] for training in all_trainings)
-
-            stats_window = TkVersion.Toplevel(window)
-            stats_window.title("Treniņu statistika")
-            ttk.Label(stats_window, text=f"Komplekts: {total_sets}, Atkārtojumi: {total_reps}, Svars: {total_weight} kg").pack()
-
     except (FileNotFoundError, json.JSONDecodeError):
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+        return
 
-# Funkcija, lai veiktu treniņu vēstures meklēšanu
+    total_weight = 0
+    for training in all_trainings:
+        total_weight += float(training["svars"])
 
-def search_trainings():
-    search_term = input("Ievadi meklēšanas terminu (datums vai vingrinājums): ")
+    messagebox.showinfo("Statistika", f"Kopējais paceltā svara daudzums visos treniņos: {total_weight} kg")
 
+# Funkcija, lai meklētu treniņus pēc datuma
+def search_trainings(date):
     try:
-        with open("training_data.json", "r") as file:
+        with open("training_data.json", "r", encoding="utf-8") as file:
             all_trainings = json.load(file)
-
-            results = [training for training in all_trainings if search_term.lower() in training['datums'].lower() or search_term.lower() in training['vingrinājums'].lower()]
-
-            if results:
-                search_window = ttk._TtkCompound.Toplevel(window)
-                search_window.title("Meklēšanas rezultāti")
-                for training in results:
-                    ttk._TtkCompound.Label(search_window, text=f"{training['datums']}: {training['vingrinājums']} ({training['komplekti']} komplekti, {training['atkārtojumi']} atkārtojumi, {training['svars']} kg)").pack()
-            else:
-                messagebox.showinfo("Meklēšanas rezultāti", "Nav atrasti treniņi ar norādīto terminu!")
-
     except (FileNotFoundError, json.JSONDecodeError):
         messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+        return
+
+    found_trainings = [training for training in all_trainings if training["datums"] == date]
+    if found_trainings:
+        for training in found_trainings:
+            print(f"Datums: {training['datums']}, Vingrinājums: {training['vingrinājums']}, Komplekts: {training['komplekti']}, Atkārtojumi: {training['atkārtojumi']}, Svars: {training['svars']}, Piezīmes: {training['piezīmes']}")
+    else:
+        messagebox.showinfo("Nav atrasts", f"Nav atrasti treniņi ar datumu: {date}")
+
+# Funkcija, lai saņemtu ieteikumus
+def get_recommendation():
+    try:
+        with open("training_data.json", "r", encoding="utf-8") as file:
+            all_trainings = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
+        return
+
+    # Piemērs - ieteikums, ņemot vērā iepriekšējos treniņus
+    recommended_exercise = "Squats"  # Dummy recommendation
+    messagebox.showinfo("Ieteikums", f"Šis vingrinājums ir ieteikts: {recommended_exercise}")
+
+# Tkinter lietotāja saskarne
+def create_gui():
+    root = tk.Tk()
+    root.title("Treniņu žurnāls")
+
+    # Ievades lauki treniņa pievienošanai
+    date_label = tk.Label(root, text="Datums:")
+    date_label.pack()
+    date_entry = tk.Entry(root)
+    date_entry.pack()
+
+    exercise_label = tk.Label(root, text="Vingrinājums:")
+    exercise_label.pack()
+    exercise_entry = tk.Entry(root)
+    exercise_entry.pack()
+
+    sets_label = tk.Label(root, text="Komplekts:")
+    sets_label.pack()
+    sets_entry = tk.Entry(root)
+    sets_entry.pack()
+
+    reps_label = tk.Label(root, text="Atkārtojumi:")
+    reps_label.pack()
+    reps_entry = tk.Entry(root)
+    reps_entry.pack()
+
+    weight_label = tk.Label(root, text="Svars (kg):")
+    weight_label.pack()
+    weight_entry = tk.Entry(root)
+    weight_entry.pack()
+
+    comments_label = tk.Label(root, text="Piezīmes:")
+    comments_label.pack()
+    comments_entry = tk.Entry(root)
+    comments_entry.pack()
+
+    def save_training():
+        add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry)
+
+    save_button = tk.Button(root, text="Pievienot treniņu", command=save_training)
+    save_button.pack()
+
+    # Poga treniņu skatīšanai
+    view_button = tk.Button(root, text="Skatīt treniņus", command=view_trainings)
+    view_button.pack()
+
+    # Poga treniņu meklēšanai pēc datuma
+    def search_training():
+        search_trainings(date_entry.get())
+
+    search_button = tk.Button(root, text="Meklēt treniņus", command=search_training)
+    search_button.pack()
+
+    # Poga statistikas skatīšanai
+    stats_button = tk.Button(root, text="Skatīt statistiku", command=show_statistics)
+    stats_button.pack()
+
+    # Poga ieteikumu saņemšanai
+    rec_button = tk.Button(root, text="Saņemt ieteikumu", command=get_recommendation)
+    rec_button.pack()
+
+    root.mainloop()
+
+# Palaiž lietotāja saskarni
+if __name__ == "__main__":
+    create_gui()
