@@ -1,23 +1,19 @@
 import json
-import tkinter as tk
 from tkinter import messagebox
 
-# Funkcija, lai pievienotu jaunu treniņu
+# Function to add new training
 def add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry):
     new_training = {
+        "id": str(len(get_all_trainings()) + 1),  # Creating a unique ID based on the length of the current data
         "datums": date_entry.get(),
         "vingrinājums": exercise_entry.get(),
-        "komplekti": sets_entry.get(),
-        "atkārtojumi": reps_entry.get(),
+        "komplekts": sets_entry.get(),  # Ensure the key is 'komplekts'
+        "atkārtojumi": reps_entry.get(),  # Ensure the key is 'atkārtojumi'
         "svars": weight_entry.get(),
         "piezīmes": comments_entry.get()
     }
 
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        all_trainings = []
+    all_trainings = get_all_trainings()
 
     all_trainings.append(new_training)
 
@@ -26,27 +22,52 @@ def add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entr
 
     messagebox.showinfo("Veiksmīgi pievienots", "Jaunais treniņš ir veiksmīgi pievienots!")
 
-# Funkcija, lai skatītu visus treniņus
+
+# Function to get all trainings
+def get_all_trainings():
+    try:
+        with open("training_data.json", "r", encoding="utf-8") as file:
+            all_trainings = json.load(file)
+            print("Loaded data:", all_trainings)  # Debugging line to check loaded data
+            if all_trainings is None:  # If the loaded data is None, return an empty list
+                return []
+            return all_trainings
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error loading training data: {e}")
+        return []  # Return an empty list in case of errors
+
+
+
+# Function to view all trainings
 def view_trainings():
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        all_trainings = []
+    all_trainings = get_all_trainings()
 
-    # Izdrukā visus treniņus
+    if not all_trainings:  # If no trainings are found, return early
+        print("Nav atrasti treniņi.")
+        return []  # Or return an empty list instead of None
+    
     for training in all_trainings:
-        print(f"Datums: {training['datums']}, Vingrinājums: {training['vingrinājums']}, Komplekts: {training['komplekti']}, Atkārtojumi: {training['atkārtojumi']}, Svars: {training['svars']}, Piezīmes: {training['piezīmes']}")
+        if isinstance(training, dict):  # Ensure each training is a dictionary
+            datums = training.get('datums', 'N/A')
+            vingrinājums = training.get('vingrinājums', 'N/A')
+            komplekts = training.get('komplekts', 'N/A')
+            atkārtojumi = training.get('atkārtojumi', 'N/A')
+            svars = training.get('svars', 'N/A')
+            piezīmes = training.get('piezīmes', 'N/A')
 
-# Funkcija, lai rediģētu esošu treniņu
+            print(f"Datums: {datums}, Vingrinājums: {vingrinājums}, "
+                  f"Komplekts: {komplekts}, Atkārtojumi: {atkārtojumi}, "
+                  f"Svars: {svars}, Piezīmes: {piezīmes}")
+        else:
+            print(f"Invalid data: {training}")
+    return all_trainings  # Return the list of trainings after printing
+
+
+# Function to edit a training
 def edit_training(training_index, date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry):
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        all_trainings = []
+    all_trainings = get_all_trainings()
 
-    # Rediģē konkrētu treniņu
+    # Edit the specific training
     all_trainings[training_index]["datums"] = date_entry.get()
     all_trainings[training_index]["vingrinājums"] = exercise_entry.get()
     all_trainings[training_index]["komplekti"] = sets_entry.get()
@@ -54,37 +75,28 @@ def edit_training(training_index, date_entry, exercise_entry, sets_entry, reps_e
     all_trainings[training_index]["svars"] = weight_entry.get()
     all_trainings[training_index]["piezīmes"] = comments_entry.get()
 
-    # Saglabā izmaiņas atpakaļ JSON failā
+    # Save changes back to JSON
     with open("training_data.json", "w", encoding="utf-8") as file:
         json.dump(all_trainings, file, indent=4)
 
     messagebox.showinfo("Veiksmīgi rediģēts", "Treniņš ir veiksmīgi rediģēts!")
 
-# Funkcija, lai izdzēstu treniņu
+# Function to delete a training
 def delete_training(training_index):
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        all_trainings = []
+    all_trainings = get_all_trainings()
 
-    # Dzēš izvēlēto treniņu
+    # Delete the specific training
     all_trainings.pop(training_index)
 
-    # Saglabā izmaiņas atpakaļ JSON failā
+    # Save changes back to JSON
     with open("training_data.json", "w", encoding="utf-8") as file:
         json.dump(all_trainings, file, indent=4)
 
     messagebox.showinfo("Veiksmīgi izdzēsts", "Treniņš ir veiksmīgi izdzēsts!")
 
-# Funkcija, lai parādītu statistiku
+# Function to show statistics
 def show_statistics():
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
-        return
+    all_trainings = get_all_trainings()
 
     total_weight = 0
     for training in all_trainings:
@@ -92,98 +104,27 @@ def show_statistics():
 
     messagebox.showinfo("Statistika", f"Kopējais paceltā svara daudzums visos treniņos: {total_weight} kg")
 
-# Funkcija, lai meklētu treniņus pēc datuma
+# Function to search trainings by date
 def search_trainings(date):
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
-        return
+    all_trainings = get_all_trainings()
 
     found_trainings = [training for training in all_trainings if training["datums"] == date]
     if found_trainings:
         for training in found_trainings:
-            print(f"Datums: {training['datums']}, Vingrinājums: {training['vingrinājums']}, Komplekts: {training['komplekti']}, Atkārtojumi: {training['atkārtojumi']}, Svars: {training['svars']}, Piezīmes: {training['piezīmes']}")
+            print(f"Datums: {training['datums']}, Vingrinājums: {training['vingrinājums']}, "
+                  f"Komplekts: {training['komplekti']}, Atkārtojumi: {training['atkārtojumi']}, "
+                  f"Svars: {training['svars']}, Piezīmes: {training['piezīmes']}")
     else:
-        messagebox.showinfo("Nav atrasts", f"Nav atrasti treniņi ar datumu: {date}")
+        messagebox.showinfo("Nav atrasti treniņi", "Nav atrasti treniņi šajā datumā.")
 
-# Funkcija, lai saņemtu ieteikumus
+# Function to get recommendation for the next training
 def get_recommendation():
-    try:
-        with open("training_data.json", "r", encoding="utf-8") as file:
-            all_trainings = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        messagebox.showwarning("Brīdinājums", "Nav pieejami treniņu dati!")
-        return
+    all_trainings = get_all_trainings()
 
-    # Piemērs - ieteikums, ņemot vērā iepriekšējos treniņus
-    recommended_exercise = "Squats"  # Dummy recommendation
-    messagebox.showinfo("Ieteikums", f"Šis vingrinājums ir ieteikts: {recommended_exercise}")
+    if all_trainings:
+        last_training = all_trainings[-1]
+        messagebox.showinfo("Ieteikums", f"Pamatojoties uz jūsu pēdējo treniņu, "
+                                         f"vēlams turpināt strādāt pie vingrinājuma {last_training['vingrinājums']}.")
+    else:
+        messagebox.showinfo("Nav treniņu", "Nav veikti treniņi, lai ieteiktu nākamo.")
 
-# Tkinter lietotāja saskarne
-def create_gui():
-    root = tk.Tk()
-    root.title("Treniņu žurnāls")
-
-    # Ievades lauki treniņa pievienošanai
-    date_label = tk.Label(root, text="Datums:")
-    date_label.pack()
-    date_entry = tk.Entry(root)
-    date_entry.pack()
-
-    exercise_label = tk.Label(root, text="Vingrinājums:")
-    exercise_label.pack()
-    exercise_entry = tk.Entry(root)
-    exercise_entry.pack()
-
-    sets_label = tk.Label(root, text="Komplekts:")
-    sets_label.pack()
-    sets_entry = tk.Entry(root)
-    sets_entry.pack()
-
-    reps_label = tk.Label(root, text="Atkārtojumi:")
-    reps_label.pack()
-    reps_entry = tk.Entry(root)
-    reps_entry.pack()
-
-    weight_label = tk.Label(root, text="Svars (kg):")
-    weight_label.pack()
-    weight_entry = tk.Entry(root)
-    weight_entry.pack()
-
-    comments_label = tk.Label(root, text="Piezīmes:")
-    comments_label.pack()
-    comments_entry = tk.Entry(root)
-    comments_entry.pack()
-
-    def save_training():
-        add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry)
-
-    save_button = tk.Button(root, text="Pievienot treniņu", command=save_training)
-    save_button.pack()
-
-    # Poga treniņu skatīšanai
-    view_button = tk.Button(root, text="Skatīt treniņus", command=view_trainings)
-    view_button.pack()
-
-    # Poga treniņu meklēšanai pēc datuma
-    def search_training():
-        search_trainings(date_entry.get())
-
-    search_button = tk.Button(root, text="Meklēt treniņus", command=search_training)
-    search_button.pack()
-
-    # Poga statistikas skatīšanai
-    stats_button = tk.Button(root, text="Skatīt statistiku", command=show_statistics)
-    stats_button.pack()
-
-    # Poga ieteikumu saņemšanai
-    rec_button = tk.Button(root, text="Saņemt ieteikumu", command=get_recommendation)
-    rec_button.pack()
-
-    root.mainloop()
-
-# Palaiž lietotāja saskarni
-if __name__ == "__main__":
-    create_gui()
