@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings, get_recommendation
-
 # 🌟 Galvenais logs
 window = tk.Tk()
 window.title("🏋 Sporta Treniņu Plānošana")
@@ -87,30 +86,21 @@ create_back_button(add_frame)
 # ✏ Rediģēt treniņu
 ttk.Label(edit_frame, text="✏ Rediģēt treniņu", font=("Arial", 16, "bold")).pack(pady=10)
 
-# Listbox (saraksts) ar treniņiem
 def update_training_list():
-    all_trainings = view_trainings()  # Izsauc funkciju, lai iegūtu visus treniņus
-    print("All Trainings:", all_trainings)  # Debugging to check what's returned
-
-    if not all_trainings:  # If it's empty or None, handle it
-        print("No trainings to display.")
-        return  # Exit the function if there are no trainings
-
-    training_list.delete(0, tk.END)  # Iztīra esošo sarakstu
+    all_trainings = view_trainings()
+    training_list.delete(0, tk.END)
     for index, training in enumerate(all_trainings):
         training_list.insert(tk.END, f"ID: {index + 1}, {training['datums']} - {training['vingrinājums']}")
-
 
 training_list = tk.Listbox(edit_frame, width=50, height=10)
 training_list.pack(pady=10)
 update_training_list()
 
 def on_select_training(event):
-    selected_index = training_list.curselection()  # Atrod izvēlēto treniņu
+    selected_index = training_list.curselection()
     if selected_index:
-        selected_index = selected_index[0]  # Paņem pirmo izvēlēto treniņu
-        selected_training = view_trainings()[selected_index]  # Iegūst izvēlēto treniņu
-        # Pievieno treniņa detaļas lauciņos
+        selected_index = selected_index[0]
+        selected_training = view_trainings()[selected_index]
         entries["📅 Datums (YYYY-MM-DD)"].delete(0, tk.END)
         entries["📅 Datums (YYYY-MM-DD)"].insert(0, selected_training["datums"])
         entries["🏋 Vingrinājums"].delete(0, tk.END)
@@ -124,21 +114,17 @@ def on_select_training(event):
         entries["📝 Piezīmes"].delete(0, tk.END)
         entries["📝 Piezīmes"].insert(0, selected_training["piezīmes"])
 
-training_list.bind("<ButtonRelease-1>", on_select_training)  # Kvēlo treniņu izvēle
+training_list.bind("<ButtonRelease-1>", on_select_training)
 
-# Rediģēt treniņu pogas
 def edit_selected_training():
     selected_index = training_list.curselection()
     if not selected_index:
         messagebox.showerror("Kļūda", "Lūdzu izvēlieties treniņu, kuru vēlaties rediģēt!")
         return
-
     selected_index = selected_index[0]
     selected_training = view_trainings()[selected_index]
-    
-    # Izsauc rediģēšanas funkciju   
     edit_training(
-        selected_training["id"],  # Treniņa ID
+        selected_training["id"],
         entries["📅 Datums (YYYY-MM-DD)"].get(),
         entries["🏋 Vingrinājums"].get(),
         entries["🔢 Komplekti"].get(),
@@ -148,10 +134,101 @@ def edit_selected_training():
     )
 
 ttk.Button(edit_frame, text="✏ Rediģēt treniņu", command=edit_selected_training).pack(pady=10)
-
 create_back_button(edit_frame)
 
-# Rādīt sākuma rāmi
+# 🗑 Dzēst treniņu
+ttk.Label(delete_frame, text="🗑 Dzēst treniņu", font=("Arial", 16, "bold")).pack(pady=10)
+
+def update_training_list_for_deletion():
+    all_trainings = view_trainings()
+
+    # Pārbaudīt, vai ir kādi treniņi
+    if not all_trainings:
+        messagebox.showinfo("Treniņi", "Nav pieejami treniņi.")
+        return
+
+    # Tīrām iepriekšējos datus no saraksta
+    training_list.delete(0, tk.END)
+
+    for index, training in enumerate(all_trainings):
+        # Pieejamās atslēgas no JSON
+        date = training.get('📅 Datums (YYYY-MM-DD)', 'Nav datuma')
+        training_type = training.get('🏋 Vingrinājums', 'Nav vingrinājuma')
+        sets = training.get('🔢 Komplekti', 'Nav komplektu')
+        repetitions = training.get('🔁 Atkārtojumi', 'Nav atkārtojumu')
+        weight = training.get('🏋‍♂️ Svars (kg)', 'Nav svara')
+        notes = training.get('📝 Piezīmes', 'Nav piezīmju')
+
+        # Ievietojam treniņu sarakstā
+        training_list.insert(tk.END, f"ID: {index + 1}, {date} - {training_type}, {sets} komplekti, {repetitions} atkārtojumi, {weight} kg, {notes}")
+
+def delete_selected_training():
+    selected_index = training_list.curselection()
+    if not selected_index:
+        messagebox.showerror("Kļūda", "Lūdzu izvēlieties treniņu, kuru vēlaties dzēst!")
+        return
+    selected_index = selected_index[0]
+    selected_training = view_trainings()[selected_index]
+    confirm = messagebox.askyesno("Apstiprinājums", f"Vai tiešām vēlaties dzēst treniņu: {selected_training['datums']} - {selected_training['vingrinājums']}?")
+    if confirm:
+        delete_training(selected_training["id"])
+        update_training_list_for_deletion()
+
+training_list = tk.Listbox(delete_frame, width=50, height=10)
+training_list.pack(pady=10)
+
+update_training_list_for_deletion()
+
+ttk.Button(delete_frame, text="🗑 Dzēst treniņu", command=delete_selected_training).pack(pady=10)
+create_back_button(delete_frame)
+
+# Skatīt treniņus
+ttk.Label(view_frame, text="📅 Skatīt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
+
+def update_view_trainings():
+    all_trainings = view_trainings()
+    view_list.delete(0, tk.END)
+    for training in all_trainings:
+        view_list.insert(tk.END, f"{training['datums']} - {training['vingrinājums']}")
+
+view_list = tk.Listbox(view_frame, width=50, height=10)
+view_list.pack(pady=10)
+update_view_trainings()
+
+create_back_button(view_frame)
+
+# Statistika
+ttk.Label(stats_frame, text="📊 Statistika", font=("Arial", 16, "bold")).pack(pady=10)
+
+def show_stats():
+    show_statistics()
+
+ttk.Button(stats_frame, text="📊 Skatīt statistiku", command=show_stats).pack(pady=10)
+create_back_button(stats_frame)
+
+# Meklēšana
+ttk.Label(search_frame, text="🔍 Meklēt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
+
+def search_training():
+    date = search_entry.get()
+    search_trainings(date)
+
+search_entry = ttk.Entry(search_frame, width=30)
+search_entry.pack(pady=10)
+
+ttk.Button(search_frame, text="🔍 Meklēt", command=search_training).pack(pady=10)
+create_back_button(search_frame)
+
+# Ieteikumi
+ttk.Label(recommend_frame, text="💡 Ieteikums nākamajam treniņam", font=("Arial", 16, "bold")).pack(pady=10)
+
+def recommend_training():
+    get_recommendation()
+
+ttk.Button(recommend_frame, text="💡 Ieteikums", command=recommend_training).pack(pady=10)
+create_back_button(recommend_frame)
+
+# Sākuma rāmis
 show_frame(home_frame)
 
 window.mainloop()
