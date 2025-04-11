@@ -2,19 +2,28 @@
     {
         "id": "1",
         "datums": "2025-04-01",
-        "vingrinājums": "Squat",
+        "vingrin\u0101jums": "Squat",
         "komplekts": "4",
-        "atkārtojumi": "10",
+        "atk\u0101rtojumi": "10",
         "svars": "80",
-        "piezīmes": "Piezīmes teksts"
+        "piez\u012bmes": "Piez\u012bmes teksts"
     },
     {
         "id": "2",
         "datums": "2025-04-02",
-        "vingrinājums": "Deadlift",
+        "vingrin\u0101jums": "Deadlift",
         "komplekts": "5",
-        "atkārtojumi": "8",
+        "atk\u0101rtojumi": "8",
         "svars": "100",
-        "piezīmes": "Piezīmes teksts"
+        "piez\u012bmes": "Piez\u012bmes teksts"
+    },
+    {
+        "id": 3,
+        "datums": "2025-11-04",
+        "vingrin\u0101jums": "K\u0101jas",
+        "komplekts": "5",
+        "atk\u0101rtojumi": "10",
+        "svars": "50",
+        "piez\u012bmes": "Lielisks workouts"
     }
 ]

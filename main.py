@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings, get_recommendation
+
 # 🌟 Galvenais logs
 window = tk.Tk()
 window.title("🏋 Sporta Treniņu Plānošana")
@@ -76,9 +77,14 @@ for field in fields:
     entries[field] = entry
 
 ttk.Button(add_frame, text="✅ Pievienot", command=lambda: add_training(
-    entries["📅 Datums (YYYY-MM-DD)"].get(), entries["🏋 Vingrinājums"].get(),
-    entries["🔢 Komplekti"].get(), entries["🔁 Atkārtojumi"].get(),
-    entries["🏋‍♂️ Svars (kg)"].get(), entries["📝 Piezīmes"].get()
+    {
+        "datums": entries["📅 Datums (YYYY-MM-DD)"].get(),
+        "vingrinājums": entries["🏋 Vingrinājums"].get(),
+        "komplekts": entries["🔢 Komplekti"].get(),
+        "atkārtojumi": entries["🔁 Atkārtojumi"].get(),
+        "svars": entries["🏋‍♂️ Svars (kg)"].get(),
+        "piezīmes": entries["📝 Piezīmes"].get()
+    }
 )).pack(pady=10)
 
 create_back_button(add_frame)
@@ -152,12 +158,12 @@ def update_training_list_for_deletion():
 
     for index, training in enumerate(all_trainings):
         # Pieejamās atslēgas no JSON
-        date = training.get('📅 Datums (YYYY-MM-DD)', 'Nav datuma')
-        training_type = training.get('🏋 Vingrinājums', 'Nav vingrinājuma')
-        sets = training.get('🔢 Komplekti', 'Nav komplektu')
-        repetitions = training.get('🔁 Atkārtojumi', 'Nav atkārtojumu')
-        weight = training.get('🏋‍♂️ Svars (kg)', 'Nav svara')
-        notes = training.get('📝 Piezīmes', 'Nav piezīmju')
+        date = training.get('datums', 'Nav datuma')
+        training_type = training.get('vingrinājums', 'Nav vingrinājuma')
+        sets = training.get('komplekts', 'Nav komplektu')
+        repetitions = training.get('atkārtojumi', 'Nav atkārtojumu')
+        weight = training.get('svars', 'Nav svara')
+        notes = training.get('piezīmes', 'Nav piezīmju')
 
         # Ievietojam treniņu sarakstā
         training_list.insert(tk.END, f"ID: {index + 1}, {date} - {training_type}, {sets} komplekti, {repetitions} atkārtojumi, {weight} kg, {notes}")

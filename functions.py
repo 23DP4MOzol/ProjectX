@@ -1,152 +1,185 @@
 import json
 from tkinter import messagebox
-from datetime import datetime
-import os  # Pievienots os modulis
 
-# Function to ensure the training file exists
-def ensure_file_exists():
-    print("Pārbauda, vai fails pastāv...")
-    if not os.path.exists('training_data.json'):
-        with open('training_data.json', 'w', encoding='utf-8') as f:
-            json.dump([], f)  # Create an empty list if the file doesn't exist
-    else:
-        print("Fails jau pastāv.")
+# ✨ File to store all training data
+TRAINING_FILE = "training_data.json"
 
-# Function to add a new training
-def add_training(date_entry, exercise_entry, sets_entry, reps_entry, weight_entry, comments_entry):
-    ensure_file_exists()  # Ensure the file exists before writing to it
-    new_training = {
-        "id": len(view_trainings()) + 1,
-        "datums": date_entry,
-        "vingrinājums": exercise_entry,
-        "komplekts": sets_entry,
-        "atkārtojumi": reps_entry,
-        "svars": weight_entry,
-        "piezīmes": comments_entry
-    }
-
+# Load all trainings from the JSON file
+def load_trainings():
     try:
-        with open('training_data.json', 'a', encoding='utf-8') as file:
-            json.dump(new_training, file)
-            file.write("\n")
-        print(f"Treniņš pievienots: {new_training}")  # Paziņojums, kas parāda pievienoto treniņu
-        messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi pievienots!")
-    except Exception as e:
-        messagebox.showerror("Kļūda", f"Treniņu pievienošana neizdevās: {e}")
-
-# Function to view all trainings
-def view_trainings():
-    ensure_file_exists()  # Ensure the file exists before reading it
-
-    try:
-        with open('training_data.json', 'r', encoding='utf-8') as file:
-            content = file.read().strip()
-            print(f"Fails saturs pirms nolasīšanas: {content}")  # Parādām faila saturu
-
-            if not content:
-                print("Fails ir tukšs vai satur nederīgus datus!")  # Paziņojums par tukšu failu
-                messagebox.showinfo("Treniņi", "Fails ir tukšs vai satur nederīgus datus!")
-                return []
-
-            # Tagad nolasām visu failu kā JSON masīvu
-            try:
-                all_trainings = json.loads(content)  # Nolasām visu saturu kā JSON objektu
-                print(f"Visi treniņi pēc nolasīšanas: {all_trainings}")  # Paziņojums, kas parāda visus treniņus
-                return all_trainings
-            except json.JSONDecodeError:
-                print("Kļūda, nolasot treniņu datus.")  # Paziņojums par kļūdu nolasot
-                messagebox.showerror("Kļūda", "Kļūda, nolasot treniņu datus.")
-                return []
-    except FileNotFoundError:
-        print("Fails netika atrasts.")  # Paziņojums par to, ka fails netika atrasts
-        messagebox.showerror("Kļūda", "Treniņu dati netika atrasti.")
+        with open(TRAINING_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
         return []
 
+# Save trainings to the JSON file
+def save_trainings(trainings):
+    with open(TRAINING_FILE, "w", encoding="utf-8") as file:
+        json.dump(trainings, file, indent=4)
 
-# Function to edit a training
-def edit_training(training_id, date, exercise, sets, reps, weight, notes):
-    all_trainings = view_trainings()
-    training_to_edit = next((t for t in all_trainings if t['id'] == training_id), None)
+# Add a new training
+def add_training(training):
+    all_trainings = load_trainings()
+    new_id = len(all_trainings) + 1
+    training_data = {
+        "id": new_id,
+        "datums": training["datums"],
+        "vingrinājums": training["vingrinājums"],
+        "komplekts": training["komplekts"],
+        "atkārtojumi": training["atkārtojumi"],
+        "svars": training["svars"],
+        "piezīmes": training["piezīmes"]
+    }
+    all_trainings.append(training_data)
+    save_trainings(all_trainings)
+    messagebox.showinfo("Veiksmīgi pievienots", "Treniņš veiksmīgi pievienots!")
 
-    if training_to_edit:
-        training_to_edit["datums"] = date
-        training_to_edit["vingrinājums"] = exercise
-        training_to_edit["komplekts"] = sets
-        training_to_edit["atkārtojumi"] = reps
-        training_to_edit["svars"] = weight
-        training_to_edit["piezīmes"] = notes
+# View all trainings
+def view_trainings():
+    return load_trainings()
 
-        with open('training_data.json', 'w') as file:
-            for training in all_trainings:
-                json.dump(training, file)
-                file.write("\n")
-        messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi rediģēts!")
-    else:
-        messagebox.showerror("Kļūda", "Treniņš ar norādīto ID nav atrasts.")
+# Edit an existing training
+def edit_training(training_id, datums, vingrinajums, komplekts, atkārtojumi, svars, piezīmes):
+    all_trainings = load_trainings()
+    for training in all_trainings:
+        if training["id"] == training_id:
+            training["datums"] = datums
+            training["vingrinājums"] = vingrinajums
+            training["komplekts"] = komplekts
+            training["atkārtojumi"] = atkārtojumi
+            training["svars"] = svars
+            training["piezīmes"] = piezīmes
+            break
+    save_trainings(all_trainings)
+    messagebox.showinfo("Veiksmīgi saglabāts", "Treniņš veiksmīgi rediģēts!")
 
-# Function to delete a training
+# Delete a training
 def delete_training(training_id):
-    all_trainings = view_trainings()
-    training_to_delete = next((t for t in all_trainings if t['id'] == training_id), None)
+    all_trainings = load_trainings()
+    all_trainings = [training for training in all_trainings if training["id"] != training_id]
+    save_trainings(all_trainings)
+    messagebox.showinfo("Veiksmīgi dzēsts", "Treniņš veiksmīgi dzēsts!")
 
-    if training_to_delete:
-        all_trainings = [t for t in all_trainings if t['id'] != training_id]
-
-        with open('training_data.json', 'w') as file:
-            for training in all_trainings:
-                json.dump(training, file)
-                file.write("\n")
-        messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi izdzēsts!")
-    else:
-        messagebox.showerror("Kļūda", "Treniņš ar norādīto ID nav atrasts.")
-
-# Function to search trainings by date
+# Search for trainings by date
 def search_trainings(date):
-    all_trainings = view_trainings()
+    all_trainings = load_trainings()
     found_trainings = [training for training in all_trainings if training["datums"] == date]
-
+    
     if found_trainings:
-        for training in found_trainings:
-            print(f"ID: {training['id']}, {training['datums']} - {training['vingrinājums']}")
+        messagebox.showinfo("Meklēt treniņus", f"Treniņi atrasti:\n" + "\n".join([f"{training['datums']} - {training['vingrinājums']}" for training in found_trainings]))
     else:
-        messagebox.showinfo("Meklēšana", "Nav atrasti treniņi ar šo datumu.")
+        messagebox.showinfo("Meklēt treniņus", "Nav atrasti treniņi ar norādīto datumu.")
 
-# Function to show training statistics
+# Show statistics (total trainings, average weight, etc.)
 def show_statistics():
-    all_trainings = view_trainings()
+    all_trainings = load_trainings()
     if not all_trainings:
         messagebox.showinfo("Statistika", "Nav pieejami treniņi.")
         return
 
     total_trainings = len(all_trainings)
-    total_sets = sum(int(training["komplekts"]) for training in all_trainings)
-    total_reps = sum(int(training["atkārtojumi"]) for training in all_trainings)
-    total_weight = sum(float(training["svars"]) for training in all_trainings)
+    total_weight = sum([float(training["svars"]) for training in all_trainings if training["svars"].replace(".", "").isdigit()])
+    average_weight = total_weight / total_trainings if total_trainings > 0 else 0
 
-    avg_weight = total_weight / total_trainings if total_trainings else 0
-    avg_sets = total_sets / total_trainings if total_trainings else 0
-    avg_reps = total_reps / total_trainings if total_trainings else 0
-
-    stats = (
-        f"Total Treniņi: {total_trainings}\n"
-        f"Vidējais svars: {avg_weight:.2f} kg\n"
-        f"Vidējais komplekti: {avg_sets:.2f}\n"
-        f"Vidējais atkārtojumi: {avg_reps:.2f}\n"
-        f"Total komplekti: {total_sets}\n"
-        f"Total atkārtojumi: {total_reps}\n"
-        f"Total svars: {total_weight:.2f} kg"
+    stats_message = (
+        f"📊 Treniņi kopā: {total_trainings}\n"
+        f"🏋‍♂️ Kopējais svars: {total_weight:.2f} kg\n"
+        f"⚖️ Vidējais svars: {average_weight:.2f} kg"
     )
 
-    messagebox.showinfo("Statistika", stats)
+    messagebox.showinfo("Statistika", stats_message)
 
-# Function to get a training recommendation
+# Get a recommendation for the next training based on average weight lifted
 def get_recommendation():
-    all_trainings = view_trainings()
+    all_trainings = load_trainings()
     if not all_trainings:
-        messagebox.showinfo("Ieteikums", "Nav pieejami treniņi.")
+        messagebox.showinfo("Ieteikums", "Nav pietiekami daudz datu, lai sniegtu ieteikumus.")
         return
 
-    latest_training = max(all_trainings, key=lambda x: datetime.strptime(x["datums"], "%Y-%m-%d"))
-    recommended_exercise = latest_training["vingrinājums"]
+    total_weight = sum([float(training["svars"]) for training in all_trainings if training["svars"].replace(".", "").isdigit()])
+    total_trainings = len(all_trainings)
+    average_weight = total_weight / total_trainings if total_trainings > 0 else 0
 
-    messagebox.showinfo("Ieteikums", f"Ņemot vērā jūsu pēdējo treniņu ({latest_training['datums']}), ieteicams turpināt ar vingrinājumu: {recommended_exercise}")
+    if average_weight < 50:
+        recommendation = "Ieteikums: Mēģiniet palielināt svaru, lai izaicinātu muskuļus!"
+    elif average_weight < 100:
+        recommendation = "Ieteikums: Lieliski! Turpiniet tādā pašā garā!"
+    else:
+        recommendation = "Ieteikums: Lielisks progress! Iespējams, ka ir vērts koncentrēties uz spēka attīstību."
+
+    messagebox.showinfo("Ieteikums nākamajam treniņam", recommendation)
+
+# Open the edit window for a specific training
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from functions import load_trainings, save_trainings, edit_training
+
+def open_edit_training_window(root, training_id):
+    # Load all trainings from the file
+    all_trainings = load_trainings()
+
+    # Find the specific training by ID
+    training = None
+    for t in all_trainings:
+        if t["id"] == training_id:
+            training = t
+            break
+
+    if not training:
+        messagebox.showerror("Error", "Training not found.")
+        return
+
+    # Open a new window with the training data
+    edit_window = tk.Toplevel(root)
+    edit_window.title(f"Edit Training {training_id}")
+
+    # Entry fields for the training data
+    tk.Label(edit_window, text="Date").grid(row=0, column=0)
+    datums_entry = tk.Entry(edit_window)
+    datums_entry.insert(0, training["datums"])
+    datums_entry.grid(row=0, column=1)
+
+    tk.Label(edit_window, text="Exercise").grid(row=1, column=0)
+    vingrinajums_entry = tk.Entry(edit_window)
+    vingrinajums_entry.insert(0, training["vingrinājums"])
+    vingrinajums_entry.grid(row=1, column=1)
+
+    tk.Label(edit_window, text="Sets").grid(row=2, column=0)
+    komplekts_entry = tk.Entry(edit_window)
+    komplekts_entry.insert(0, training["komplekts"])
+    komplekts_entry.grid(row=2, column=1)
+
+    tk.Label(edit_window, text="Reps").grid(row=3, column=0)
+    atkārtojumi_entry = tk.Entry(edit_window)
+    atkārtojumi_entry.insert(0, training["atkārtojumi"])
+    atkārtojumi_entry.grid(row=3, column=1)
+
+    tk.Label(edit_window, text="Weight").grid(row=4, column=0)
+    svars_entry = tk.Entry(edit_window)
+    svars_entry.insert(0, training["svars"])
+    svars_entry.grid(row=4, column=1)
+
+    tk.Label(edit_window, text="Notes").grid(row=5, column=0)
+    piezimes_entry = tk.Entry(edit_window)
+    piezimes_entry.insert(0, training["piezīmes"])
+    piezimes_entry.grid(row=5, column=1)
+
+    # Save changes
+    def save_changes():
+        new_datums = datums_entry.get()
+        new_vingrinajums = vingrinajums_entry.get()
+        new_komplekts = komplekts_entry.get()
+        new_atkartojumi = atkārtojumi_entry.get()
+        new_svars = svars_entry.get()
+        new_piezimes = piezimes_entry.get()
+
+        # Pass the changes back to the edit_training function
+        edit_training(training_id, new_datums, new_vingrinajums, new_komplekts, new_atkartojumi, new_svars, new_piezimes)
+
+        messagebox.showinfo("Successfully saved", "Training successfully edited!")
+        edit_window.destroy()  # Close the window after saving
+
+    # Save button
+    save_button = tk.Button(edit_window, text="Save", command=save_changes)
+    save_button.grid(row=6, column=0, columnspan=2)
