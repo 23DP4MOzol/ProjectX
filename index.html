@@ -3,77 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports 5x30</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Transformējies - Fitnesa lietotne</title> 
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
-    <!-- Hamburger Menu for Mobile -->
-    <button class="hamburger" onclick="toggleSidebar()">☰</button>
-
-    <div class="container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <ul>
-                <li><a href="#home">Mājas</a></li>
-                <li><a href="#download">Lejupielāde</a></li>
-                <li><a href="#images">Bildes</a></li>
-                <li><a href="#contacts">Kontakti</a></li>
-                <li><a href="#about">Par</a></li>
-            </ul>
-        </nav>
-
-        <!-- Main Content -->
-        <section id="home">
-            <div class="section-content">
-                <h1>Sports <span class="highlight">5×30</span></h1>
-                <p>Sporta Trenīnu Plānošanas Lietotne</p>
-                <a href="#download">
-                    <button class="download-btn">Lejupielādēt</button>
-                </a>
+    <!-- Galvenes sekcija -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="src/img/main.png" alt="Logo" />
             </div>
-        </section>
+            <nav>
+                <ul>
+                    <li><a href="#features">Funkcijas</a></li>
+                    <li><a href="#experience">Pieredze</a></li> 
+                    <li><a href="#testimonials">Kopiena</a></li> 
+                    <li><a href="#hero" class="cta-button">Sākt</a></li> 
+                    <li><a href="#" id="login-btn" class="cta-button">Pieslēgties</a></li> 
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <!-- Lejupielāde Section -->
-        <section id="download">
-            <div class="section-content">
-                <h2>Lejupielāde</h2>
-                <p>Iegūstiet lietotni un sāciet plānot sporta treniņus.</p>
-                <a href="/Download_map.zip" download="5x30.zip">
-                    <button class="download-btn">Lejupielādēt tagad</button>
-                </a>
+    <!-- Pieslēgšanās sekcija -->
+    <section id="login" class="login-section" style="display:none;">
+        <div class="container">
+            <h2>Pieslēdzies savam kontam</h2> 
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Lietotājvārds</label>
+                    <input type="text" id="username" name="username" required placeholder="Ievadi savu lietotājvārdu">
+                </div>
+                <div class="form-group">
+                    <label for="password">Parole</label> 
+                    <input type="password" id="password" name="password" required placeholder="Ievadi savu paroli">
+                </div>
+                <button type="submit" class="cta-button">Pieslēgties</button> 
+                <p>Nav konta? <a href="#" id="signup-link">Reģistrējies šeit</a></p> 
+            </form>
+        </div>
+    </section>
+
+    <!-- Reģistrācijas sekcija -->
+    <section id="signup" class="signup-section" style="display:none;">
+        <div class="container">
+            <h2>Izveido savu kontu</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="new-username">Lietotājvārds</label> 
+                    <input type="text" id="new-username" name="new-username" required placeholder="Izvēlies lietotājvārdu">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Parole</label> 
+                    <input type="password" id="new-password" name="new-password" required placeholder="Izvēlies paroli">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-pasts</label> 
+                    <input type="email" id="email" name="email" required placeholder="Ievadi savu e-pastu">
+                </div>
+                <button type="submit" class="cta-button">Reģistrēties</button> 
+                <p>Jau ir konts? <a href="#" id="login-link">Pieslēgties šeit</a></p> 
+            </form>
+        </div>
+    </section>
+
+    <!-- Hero sekcija -->
+    <section id="hero">
+        <div class="hero-content">
+            <h1>Sāc savu ceļojumu ar 5x30</h1> 
+            <p>Atslēdz savu potenciālu ar treniņiem un personalizētu apmācību.</p> 
+            <a href="download.html" class="cta-button">Sāc savu ceļojumu</a>
+        </div>
+        <div class="hero-image">
+            <img src="src/img/1st.PNG" alt="Lietotnes ekrāns" /> 
+        </div>
+    </section>
+
+    <!-- Funkciju sekcija -->
+    <section id="features">
+        <div class="container">
+            <h2>Visas funkcijas, kas tev nepieciešamas</h2> 
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <img src="src/img/2nd.PNG" alt="Treniņi" style="width: 400px; height: 400px;" /> 
+                    <h3>Treniņi</h3> 
+                    <p>Personalizēti plāni tavam fitnesa ceļojumam.</p> 
+                </div>
+                <div class="feature-card">
+                    <img src="src/img/4th.png" alt="Kopienas atbalsts" style="width: 400px; height: 400px;" /> 
+                    <h3>Kopienas atbalsts</h3> 
+                    <p>Saziņa ar līdzīgi domājošiem cilvēkiem.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="src/img/3rd.png" alt="Progressa izsekošana" style="width: 400px; height: 400px;" />
+                    <h3>Progressa izsekošana</h3> 
+                    <p>Mēri savu panākumu viegli.</p>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Images Section -->
-        <section id="images">
-            <div class="section-content">
-                <h2>Bildes</h2>
-                <p>Iepazīstieties ar attēliem, kas saistīti ar sporta treniņu plānošanu.</p>
+    <!-- Pieredzes sekcija -->
+    <section id="experience">
+        <div class="container">
+            <h2>Pieredze ar nākotnes fitnesu</h2>
+
+            <div class="app-screenshots">
+                <img src="src/img/5th.png" alt="Ekrānuzņēmums 1" /> 
+                <img src="src/img/6th.png" alt="Ekrānuzņēmums 2" /> 
+                <img src="src/img/7th.png" alt="Ekrānuzņēmums 3" />             
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Contacts Section -->
-        <section id="contacts">
-            <div class="section-content">
-                <h2>Kontakti</h2>
-                <p>Sazinieties ar mums, lai iegūtu vairāk informācijas.</p>
-                <form>
-                    <label for="email">E-pasts:</label>
-                    <input type="email" id="email" name="email" required>
-                    <button type="submit">Iesniegt</button>
-                </form>
+    <!-- Atsauksmes sekcija -->
+    <section id="testimonials">
+        <div class="container">
+            <h2>Pieņemts mūsu lietotāju</h2>
+            <div class="testimonial-cards">
+                <div class="testimonial-card">
+                    <p>"Šī lietotne pilnībā mainīja manu fitnesa ceļojumu!"</p>
+                    <p>- Lietotājs 1</p>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Lieliska kopiena un pārsteidzoša progressa izsekošana!"</p>
+                    <p>- Lietotājs 2</p>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Jūtos motivēts un veselīgs kā nekad agrāk!"</p>
+                    <p>- Lietotājs 3</p>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- About Section -->
-        <section id="about">
-            <div class="section-content">
-                <h2>Par</h2>
-                <p>Uzziniet vairāk par Sports 5×30 lietotni un tās funkcijām.</p>
+    <!-- Kājas sekcija -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#privacy">Privātums</a>
+                <a href="#terms">Noteikumi</a> 
+                <a href="#contact">Kontakti</a> 
             </div>
-        </section>
-    </div>
+            <p>&copy; 2025 Fitnesa lietotne. Visas tiesības aizsargātas.</p> 
+        </div>
+    </footer>
 
-    <script src="src/js/script.js"></script>
+    <script defer src="src/js/script.js"></script>
 </body>
 </html>
