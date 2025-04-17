@@ -92,38 +92,31 @@ create_back_button(add_frame)
 # ✏ Rediģēt treniņu
 ttk.Label(edit_frame, text="✏ Rediģēt treniņu", font=("Arial", 16, "bold")).pack(pady=10)
 
-def update_training_list():
+edit_training_list = tk.Listbox(edit_frame, width=50, height=10)
+edit_training_list.pack(pady=10)
+
+def update_edit_training_list():
     all_trainings = view_trainings()
-    training_list.delete(0, tk.END)
+    edit_training_list.delete(0, tk.END)
     for index, training in enumerate(all_trainings):
-        training_list.insert(tk.END, f"ID: {index + 1}, {training['datums']} - {training['vingrinājums']}")
+        edit_training_list.insert(tk.END, f"ID: {index + 1}, {training['datums']} - {training['vingrinājums']}")
 
-training_list = tk.Listbox(edit_frame, width=50, height=10)
-training_list.pack(pady=10)
-update_training_list()
-
-def on_select_training(event):
-    selected_index = training_list.curselection()
+def on_select_edit_training(event):
+    selected_index = edit_training_list.curselection()
     if selected_index:
         selected_index = selected_index[0]
         selected_training = view_trainings()[selected_index]
-        entries["📅 Datums (YYYY-MM-DD)"].delete(0, tk.END)
-        entries["📅 Datums (YYYY-MM-DD)"].insert(0, selected_training["datums"])
-        entries["🏋 Vingrinājums"].delete(0, tk.END)
-        entries["🏋 Vingrinājums"].insert(0, selected_training["vingrinājums"])
-        entries["🔢 Komplekti"].delete(0, tk.END)
-        entries["🔢 Komplekti"].insert(0, selected_training["komplekts"])
-        entries["🔁 Atkārtojumi"].delete(0, tk.END)
-        entries["🔁 Atkārtojumi"].insert(0, selected_training["atkārtojumi"])
-        entries["🏋‍♂️ Svars (kg)"].delete(0, tk.END)
-        entries["🏋‍♂️ Svars (kg)"].insert(0, selected_training["svars"])
-        entries["📝 Piezīmes"].delete(0, tk.END)
-        entries["📝 Piezīmes"].insert(0, selected_training["piezīmes"])
+        open_edit_window(selected_training)
 
-training_list.bind("<ButtonRelease-1>", on_select_training)
+
+edit_training_list.bind("<Double-Button-1>", on_select_edit_training)
+
+
+update_edit_training_list()
+
 
 def edit_selected_training():
-    selected_index = training_list.curselection()
+    selected_index = edit_training_list.curselection()
     if not selected_index:
         messagebox.showerror("Kļūda", "Lūdzu izvēlieties treniņu, kuru vēlaties rediģēt!")
         return
@@ -138,9 +131,44 @@ def edit_selected_training():
         entries["🏋‍♂️ Svars (kg)"].get(),
         entries["📝 Piezīmes"].get()
     )
+    update_edit_training_list()
+
 
 ttk.Button(edit_frame, text="✏ Rediģēt treniņu", command=edit_selected_training).pack(pady=10)
 create_back_button(edit_frame)
+
+def open_edit_window(training):
+    edit_window = tk.Toplevel()
+    edit_window.title("Rediģēt treniņu")
+
+    # Labels + Entry fields
+    labels = ["Datums", "Vingrinājums", "Komplekts", "Atkārtojumi", "Svars", "Piezīmes"]
+    keys = ["datums", "vingrinājums", "komplekts", "atkārtojumi", "svars", "piezīmes"]
+    entries = {}
+
+    for i, (label, key) in enumerate(zip(labels, keys)):
+        tk.Label(edit_window, text=label).grid(row=i, column=0, padx=5, pady=5, sticky="e")
+        entry = tk.Entry(edit_window, width=30)
+        entry.insert(0, training.get(key, ""))
+        entry.grid(row=i, column=1, padx=5, pady=5)
+        entries[key] = entry
+
+    # Saglabāšanas poga
+    def save_changes():
+        updated_values = {key: entries[key].get() for key in keys}
+        edit_training(
+            training_id=training["id"],
+            datums=updated_values["datums"],
+            vingrinajums=updated_values["vingrinājums"],
+            komplekts=updated_values["komplekts"],
+            atkārtojumi=updated_values["atkārtojumi"],
+            svars=updated_values["svars"],
+            piezīmes=updated_values["piezīmes"]
+        )
+        edit_window.destroy()
+
+    tk.Button(edit_window, text="Saglabāt izmaiņas", command=save_changes).grid(row=len(labels), column=0, columnspan=2, pady=10)
+
 
 # 🗑 Dzēst treniņu
 ttk.Label(delete_frame, text="🗑 Dzēst treniņu", font=("Arial", 16, "bold")).pack(pady=10)
