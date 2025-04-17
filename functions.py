@@ -38,9 +38,12 @@ def add_training(training):
 def view_trainings():
     return load_trainings()
 
-# Edit an existing training
+# Funkcija treniņa datu rediģēšanai
 def edit_training(training_id, datums, vingrinajums, komplekts, atkārtojumi, svars, piezīmes):
-    all_trainings = load_trainings()
+    # Iegūstam visus treniņus no datnes vai saraksta
+    all_trainings = load_trainings()  # Piemēram, ja dati ir saglabāti failā
+
+    # Atrodam treniņu pēc ID un atjaunojam tā datus
     for training in all_trainings:
         if training["id"] == training_id:
             training["datums"] = datums
@@ -50,8 +53,16 @@ def edit_training(training_id, datums, vingrinajums, komplekts, atkārtojumi, sv
             training["svars"] = svars
             training["piezīmes"] = piezīmes
             break
+    else:
+        print(f"Treniņš ar ID {training_id} netika atrasts.")
+        return False
+    
+    # Saglabājam visus datus atpakaļ
     save_trainings(all_trainings)
-    messagebox.showinfo("Veiksmīgi saglabāts", "Treniņš veiksmīgi rediģēts!")
+    return True  # Veiksmīgi saglabāts
+
+
+
 
 # Delete a training
 def delete_training(training_id):

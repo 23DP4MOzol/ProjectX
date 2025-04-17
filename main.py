@@ -92,82 +92,79 @@ create_back_button(add_frame)
 # ✏ Rediģēt treniņu
 ttk.Label(edit_frame, text="✏ Rediģēt treniņu", font=("Arial", 16, "bold")).pack(pady=10)
 
+# Funkcija, kas tiks izsaukta, kad lietotājs izvēlēsies treniņu no saraksta
+def on_select_edit_training(event):
+    selected_index = edit_training_list.curselection()  # Atrod izvēlēto treniņu
+    if selected_index:
+        selected_index = selected_index[0]
+        selected_training = view_trainings()[selected_index]  # Skatāmies treniņus
+        open_edit_window(selected_training)  # Atveram rediģēšanas logu
+
+# Izveido sarakstu ar treniņiem
 edit_training_list = tk.Listbox(edit_frame, width=50, height=10)
 edit_training_list.pack(pady=10)
 
+# Funkcija, kas atjauno sarakstu un pievieno jaunas vērtības
 def update_edit_training_list():
     all_trainings = view_trainings()
     edit_training_list.delete(0, tk.END)
     for index, training in enumerate(all_trainings):
-        edit_training_list.insert(tk.END, f"ID: {index + 1}, {training['datums']} - {training['vingrinājums']}")
+        edit_training_list.insert(tk.END, f"ID: {training['id']}, {training['datums']} - {training['vingrinājums']}")
 
-def on_select_edit_training(event):
-    selected_index = edit_training_list.curselection()
-    if selected_index:
-        selected_index = selected_index[0]
-        selected_training = view_trainings()[selected_index]
-        open_edit_window(selected_training)
-
-
-edit_training_list.bind("<Double-Button-1>", on_select_edit_training)
-
-
+# Pievienot notikumu: dubultklikšķis uz treniņa saraksta
+edit_training_list.bind("<Double-1>", on_select_edit_training)
 update_edit_training_list()
 
+# Atpakaļ poga galvenajā rediģēšanas rāmī
+def create_back_button(frame):
+    ttk.Button(frame, text="⬅ Atpakaļ", command=lambda: show_frame(home_frame), width=15).pack(pady=10)
 
-def edit_selected_training():
-    selected_index = edit_training_list.curselection()
-    if not selected_index:
-        messagebox.showerror("Kļūda", "Lūdzu izvēlieties treniņu, kuru vēlaties rediģēt!")
-        return
-    selected_index = selected_index[0]
-    selected_training = view_trainings()[selected_index]
-    edit_training(
-        selected_training["id"],
-        entries["📅 Datums (YYYY-MM-DD)"].get(),
-        entries["🏋 Vingrinājums"].get(),
-        entries["🔢 Komplekti"].get(),
-        entries["🔁 Atkārtojumi"].get(),
-        entries["🏋‍♂️ Svars (kg)"].get(),
-        entries["📝 Piezīmes"].get()
-    )
-    update_edit_training_list()
+create_back_button(edit_frame)  # Šeit pievienojam atpakaļ pogu rediģēšanas rāmim
 
 
-ttk.Button(edit_frame, text="✏ Rediģēt treniņu", command=edit_selected_training).pack(pady=10)
-create_back_button(edit_frame)
-
+# Funkcija, lai atvērtu rediģēšanas logu
 def open_edit_window(training):
+    # Izveido jaunu top-level logu
     edit_window = tk.Toplevel()
-    edit_window.title("Rediģēt treniņu")
+    edit_window.title(f"Rediģēt treniņu: {training['datums']} - {training['vingrinājums']}")
 
-    # Labels + Entry fields
+    # Dizains
+    edit_frame = ttk.Frame(edit_window, padding=20)
+    edit_frame.grid(row=0, column=0)
+
+    # Etiķetes un lauki
     labels = ["Datums", "Vingrinājums", "Komplekts", "Atkārtojumi", "Svars", "Piezīmes"]
     keys = ["datums", "vingrinājums", "komplekts", "atkārtojumi", "svars", "piezīmes"]
     entries = {}
 
     for i, (label, key) in enumerate(zip(labels, keys)):
-        tk.Label(edit_window, text=label).grid(row=i, column=0, padx=5, pady=5, sticky="e")
-        entry = tk.Entry(edit_window, width=30)
-        entry.insert(0, training.get(key, ""))
+        tk.Label(edit_frame, text=label, font=("Arial", 12)).grid(row=i, column=0, padx=5, pady=5, sticky="e")
+        entry = ttk.Entry(edit_frame, width=30)
+        entry.insert(0, training[key])  # Ieliek esošo vērtību
         entry.grid(row=i, column=1, padx=5, pady=5)
-        entries[key] = entry
+        entries[key] = entry  # Saglabājam laukus, lai vēlāk piekļūtu tiem
 
-    # Saglabāšanas poga
+    # Funkcija, lai saglabātu izmaiņas
     def save_changes():
         updated_values = {key: entries[key].get() for key in keys}
-        edit_training(
-            training_id=training["id"],
-            datums=updated_values["datums"],
-            vingrinajums=updated_values["vingrinājums"],
-            komplekts=updated_values["komplekts"],
-            atkārtojumi=updated_values["atkārtojumi"],
-            svars=updated_values["svars"],
-            piezīmes=updated_values["piezīmes"]
-        )
-        edit_window.destroy()
+        print("Saglabātie dati:", updated_values)  # Izdrukājam saglabātos datus
+        # Nododam visus atjauninātos datus uz edit_training funkciju
+        edit_training(training["id"], **updated_values)  # Saglabājam izmaiņas treniņā
+        update_edit_training_list()  # Atjaunojam sarakstu
+        messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi rediģēts!")  # Paziņojums, ka izmaiņas saglabātas
+        edit_window.destroy()  # Aizveram logu
 
-    tk.Button(edit_window, text="Saglabāt izmaiņas", command=save_changes).grid(row=len(labels), column=0, columnspan=2, pady=10)
+
+    # Poga, kas saglabā izmaiņas
+    save_button = ttk.Button(edit_frame, text="Saglabāt izmaiņas", command=save_changes)
+    save_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
+
+    # Poga "Atpakaļ"
+    back_button = ttk.Button(edit_frame, text="Atpakaļ", command=edit_window.destroy, width=15)
+    back_button.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
+
+
+
 
 
 # 🗑 Dzēst treniņu
