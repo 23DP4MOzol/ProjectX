@@ -241,7 +241,7 @@ ttk.Button(stats_frame, text="📊 Skatīt statistiku", command=show_stats).pack
 create_back_button(stats_frame)
 
 # Meklēšana
-ttk.Label(search_frame, text="🔍 Meklēt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
+ttk.Label(search_frame, text="🔍 Meklēt treniņus pēc datuma(YYYY-MM-DD)", font=("Arial", 16, "bold")).pack(pady=10)
 
 def search_training():
     date = search_entry.get()
