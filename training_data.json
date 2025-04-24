@@ -16,5 +16,14 @@
         "atk\u0101rtojumi": "8",
         "svars": "100",
         "piez\u012bmes": "Piez\u012bmes teksts"
+    },
+    {
+        "id": 3,
+        "datums": "2025-04-24",
+        "vingrin\u0101jums": "Chest",
+        "komplekts": "10",
+        "atk\u0101rtojumi": "10",
+        "svars": "50",
+        "piez\u012bmes": "Labs treni\u0146\u0161"
     }
 ]

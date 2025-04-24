@@ -1,5 +1,6 @@
 import json
 from tkinter import messagebox
+import matplotlib.pyplot as plt
 
 # ✨ File to store all training data
 TRAINING_FILE = "training_data.json"
@@ -98,9 +99,26 @@ def show_statistics():
         f"⚖️ Vidējais svars: {average_weight:.2f} kg"
     )
 
+    # Parādīsim statistiku
     messagebox.showinfo("Statistika", stats_message)
 
+    # Diagramma - svaru attēlojums
+    weights = [float(training["svars"]) for training in all_trainings if training["svars"].replace(".", "").isdigit()]
+    dates = [training["datums"] for training in all_trainings]
+
+    # Izveidojam diagrammu
+    plt.figure(figsize=(10, 6))
+    plt.plot(dates, weights, marker='o', linestyle='-', color='b', label="Svars")
+    plt.xlabel('Datums')
+    plt.ylabel('Svars (kg)')
+    plt.title('Svara progresss laika gaitā')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.legend()
+    plt.show()
+
 # Get a recommendation for the next training based on average weight lifted
+
 def get_recommendation():
     all_trainings = load_trainings()
     if not all_trainings:
@@ -115,10 +133,13 @@ def get_recommendation():
         recommendation = "Ieteikums: Mēģiniet palielināt svaru, lai izaicinātu muskuļus!"
     elif average_weight < 100:
         recommendation = "Ieteikums: Lieliski! Turpiniet tādā pašā garā!"
-    else:
+    elif average_weight < 150:
         recommendation = "Ieteikums: Lielisks progress! Iespējams, ka ir vērts koncentrēties uz spēka attīstību."
+    else:
+        recommendation = "Ieteikums: Tu esi sasniedzis izcilus rezultātus! Pārdomā spēka treniņu uzlabošanu vai palielinājumu."
 
     messagebox.showinfo("Ieteikums nākamajam treniņam", recommendation)
+
 
 # Open the edit window for a specific training
 import tkinter as tk
