@@ -216,17 +216,80 @@ create_back_button(delete_frame)
 # Skatīt treniņus
 ttk.Label(view_frame, text="📅 Skatīt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
 
+# Saglabāsim šķirošanas secību - sākotnēji šķirosim no jaunākā līdz vecākajam
+sort_order = "desc"  # "desc" nozīmē no jaunākā uz vecāko, "asc" - otrādi
+
+# Funkcija, kas atjauno sarakstu un šķiro to pēc datuma
 def update_view_trainings():
-    all_trainings = view_trainings()
+    all_trainings = view_trainings()  # Šeit jābūt tavai funkcijai, kas iegūst visus treniņus
+
+    # Atkarībā no šķirošanas secības, šķirojam treniņus
+    if sort_order == "desc":
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['datums'], reverse=True)
+    else:
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['datums'])
+
+    # Ievieto treniņus sarakstā
     view_list.delete(0, tk.END)
-    for training in all_trainings:
+    for training in sorted_trainings:
         view_list.insert(tk.END, f"{training['datums']} - {training['vingrinājums']}")
 
+# Funkcija, kas pārslēdz šķirošanas secību un atjauno sarakstu
+def toggle_sort_order():
+    global sort_order
+    # Mainām šķirošanas secību
+    if sort_order == "desc":
+        sort_order = "asc"
+    else:
+        sort_order = "desc"
+    
+    # Atjaunojam treniņu sarakstu pēc jaunā secības
+    update_view_trainings()
+
+# Izveido treniņu sarakstu
 view_list = tk.Listbox(view_frame, width=50, height=10)
 view_list.pack(pady=10)
+
+# Izveido pogu "Sortēt pēc datuma"
+sort_button = ttk.Button(view_frame, text="📅 Sortēt pēc datuma", command=toggle_sort_order)
+sort_button.pack(pady=10)
+
+# Atjaunojam sarakstu sākotnēji
 update_view_trainings()
 
+# Atgriešanās poga (ja nepieciešams)
 create_back_button(view_frame)
+
+
+# Funkcija, kas tiek izsaukta, kad tiek izvēlēts treniņš no saraksta
+def on_select_view_training(event):
+    selected_index = view_list.curselection()  # Atrod izvēlēto treniņu
+    if selected_index:
+        selected_index = selected_index[0]
+        selected_training = view_trainings()[selected_index]  # Skatāmies treniņus
+        show_training_details(selected_training)  # Parādām treniņa detaļas
+
+# Funkcija, lai parādītu treniņa informāciju
+def show_training_details(training):
+    details_window = tk.Toplevel(window)
+    details_window.title(f"Treniņš: {training['datums']} - {training['vingrinājums']}")
+
+    # Pievienojam treniņa informāciju
+    details_label = f"Datums: {training['datums']}\n"
+    details_label += f"Vingrinājums: {training['vingrinājums']}\n"
+    details_label += f"Komplekts: {training['komplekts']}\n"
+    details_label += f"Atkārtojumi: {training['atkārtojumi']}\n"
+    details_label += f"Svars: {training['svars']} kg\n"
+    details_label += f"Piezīmes: {training['piezīmes']}"
+
+    ttk.Label(details_window, text=details_label, font=("Arial", 12)).pack(pady=20)
+
+    # Poga aizvērt logu
+    ttk.Button(details_window, text="Aizvērt", command=details_window.destroy).pack(pady=10)
+
+# Atjauninām sarakstu, lai parādītu treniņus un pievienojam notikumu, lai varētu izvēlēties treniņu
+view_list.bind("<Double-1>", on_select_view_training)
+
 
 # Statistika
 ttk.Label(stats_frame, text="📊 Statistika", font=("Arial", 16, "bold")).pack(pady=10)
