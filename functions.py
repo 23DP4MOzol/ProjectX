@@ -99,21 +99,6 @@ def show_statistics():
     # Parādīsim statistiku
     messagebox.showinfo("Statistika", stats_message)
 
-    # Diagramma - svaru attēlojums
-    weights = [float(training["svars"]) for training in all_trainings if training["svars"].replace(".", "").isdigit()]
-    dates = [training["datums"] for training in all_trainings]
-
-    # Izveidojam diagrammu
-    plt.figure(figsize=(10, 6))
-    plt.plot(dates, weights, marker='o', linestyle='-', color='b', label="Svars")
-    plt.xlabel('Datums')
-    plt.ylabel('Svars (kg)')
-    plt.title('Svara progresss laika gaitā')
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.legend()
-    plt.show()
-
 # Iegūt ieteikumu nākamajam treniņam, pamatojoties uz vidējo paceltā svara
 
 def get_recommendation():

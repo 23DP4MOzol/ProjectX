@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings, get_recommendation
+from datetime import datetime, timedelta
+import numpy as np
 
 # 🌟 Galvenais logs
 window = tk.Tk()
@@ -325,14 +329,158 @@ def show_training_details(training):
 view_list.bind("<Double-1>", on_select_view_training)
 
 
-# Statistika
+## Statistika
+
+
+
+def create_new_window(title, fig):
+    # Izveidojam jaunu logu
+    new_window = tk.Toplevel()
+    new_window.title(title)
+    
+    # Zīmējam matplotlib diagrammu jaunajā logā
+    canvas = FigureCanvasTkAgg(fig, master=new_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(pady=20)
+    
+    # Poga, lai aizvērtu logu
+    ttk.Button(new_window, text="Aizvērt", command=new_window.destroy).pack(pady=10)
+
+
 ttk.Label(stats_frame, text="📊 Statistika", font=("Arial", 16, "bold")).pack(pady=10)
 
-def show_stats():
-    show_statistics()
+# Funkcijas, kas tiks izsauktas, kad tiek nospiestas pogas
+def show_monthly_chart():
+    # Iegūstam visus treniņus
+    all_trainings = view_trainings()
+    
+    # Sagatavojam datus mēneša analīzei
+    months = []
+    training_count = {}
 
-ttk.Button(stats_frame, text="📊 Skatīt statistiku", command=show_stats).pack(pady=10)
-create_back_button(stats_frame)
+    for training in all_trainings:
+        # Iegūstam mēnesi no datuma
+        date = datetime.strptime(training['datums'], "%Y-%m-%d")
+        month_year = date.strftime("%Y-%m")  # Piemēram, "2023-04"
+        
+        if month_year not in months:
+            months.append(month_year)
+            training_count[month_year] = 0
+        training_count[month_year] += 1
+
+    # Sagatavojam datus diagrammai
+    sorted_months = sorted(training_count.keys())
+    counts = [training_count[month] for month in sorted_months]
+
+    # Zīmējam diagrammu
+    fig, ax = plt.subplots()
+    ax.bar(sorted_months, counts, color='skyblue')
+    ax.set_title("Treniņu skaits pa mēnešiem")
+    ax.set_xlabel("Mēnesis")
+    ax.set_ylabel("Treniņu skaits")
+    ax.tick_params(axis='x', rotation=45)
+
+    # Atveram diagrammu jaunā logā
+    create_new_window("Mēneša Diagramma", fig)
+
+
+def show_weekly_chart():
+    # Iegūstam visus treniņus
+    all_trainings = view_trainings()
+
+    # Sagatavojam datus nedēļas analīzei
+    weeks = []
+    training_count = {}
+
+    for training in all_trainings:
+        # Iegūstam datumu un pārveidojam uz nedēļu (nedēļas sākums)
+        date = datetime.strptime(training['datums'], "%Y-%m-%d")
+        week_start = date - timedelta(days=date.weekday())  # Nedēļas sākums (pirmdiena)
+        week_str = week_start.strftime("%Y-%m-%d")  # Piemēram, "2023-04-03" (pirmdiena)
+        
+        if week_str not in weeks:
+            weeks.append(week_str)
+            training_count[week_str] = 0
+        training_count[week_str] += 1
+
+    # Sagatavojam datus diagrammai
+    sorted_weeks = sorted(training_count.keys())
+    counts = [training_count[week] for week in sorted_weeks]
+
+    # Zīmējam diagrammu
+    fig, ax = plt.subplots()
+    ax.bar(sorted_weeks, counts, color='lightcoral')
+    ax.set_title("Treniņu skaits pa nedēļām")
+    ax.set_xlabel("Nedēļa (pirmdiena)")
+    ax.set_ylabel("Treniņu skaits")
+    ax.tick_params(axis='x', rotation=45)
+
+    # Atveram diagrammu jaunā logā
+    create_new_window("Nedēļas Diagramma", fig)
+
+
+def show_general_chart_by_weight():
+    # Iegūstam visus treniņus
+    all_trainings = view_trainings()
+
+    # Sagatavojam datus pēc svara
+    weight_count = {}
+
+    for training in all_trainings:
+        # Iegūstam svaru no treniņa
+        weight = training.get('svars')
+        
+        if weight is None:
+            continue  # Ja svara nav, tad izlaidīsim šo ierakstu
+
+        # Skaitām, cik reizes katrs svars parādās
+        if weight not in weight_count:
+            weight_count[weight] = 0
+        weight_count[weight] += 1
+
+    # Sagatavojam datus diagrammai
+    weights = list(weight_count.keys())
+    counts = list(weight_count.values())
+
+    # Zīmējam diagrammu
+    fig, ax = plt.subplots()
+    ax.bar(weights, counts, color='lightblue')
+    ax.set_title("Treniņu skaits pēc svara")
+    ax.set_xlabel("Svars (kg)")
+    ax.set_ylabel("Treniņu skaits")
+    ax.tick_params(axis='x', rotation=45)
+
+    # Atveram diagrammu jaunā logā
+    create_new_window("Vispārējā Diagramma pēc Svara", fig)
+
+def categorize_weights(weight):
+    if weight < 50:
+        return "<50 kg"
+    elif weight < 70:
+        return "50-70 kg"
+    elif weight < 90:
+        return "70-90 kg"
+    else:
+        return "90+ kg"
+
+
+def show_stats():
+    show_statistics()  # Parādām statistiku
+
+# Poga Mēneša diagramma
+ttk.Button(stats_frame, text="📊 Mēneša Diagramma", command=show_monthly_chart).pack(pady=5)
+
+# Poga Nedēļas diagramma
+ttk.Button(stats_frame, text="📊 Nedēļas Diagramma", command=show_weekly_chart).pack(pady=5)
+
+# Poga Vispārējā diagramma pēc svara
+ttk.Button(stats_frame, text="📊 Vispārējā Diagramma pēc Svara", command=show_general_chart_by_weight).pack(pady=5)
+
+# Poga Skatīt statistiku
+ttk.Button(stats_frame, text="📊 Skatīt statistiku", command=show_stats).pack(pady=5)
+
+create_back_button(stats_frame)  # Atpakaļ poga
+
 
 # Meklēšana
 ttk.Label(search_frame, text="🔍 Meklēt treniņus pēc datuma(YYYY-MM-DD)", font=("Arial", 16, "bold")).pack(pady=10)
