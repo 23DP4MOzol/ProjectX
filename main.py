@@ -216,8 +216,9 @@ create_back_button(delete_frame)
 # Skatīt treniņus
 ttk.Label(view_frame, text="📅 Skatīt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
 
-# Saglabāsim šķirošanas secību - sākotnēji šķirosim no jaunākā līdz vecākajam
+# Saglabāsim šķirošanas secību
 sort_order = "desc"  # "desc" nozīmē no jaunākā uz vecāko, "asc" - otrādi
+alphabetical_order = "asc"  # "asc" nozīmē no A-Z, "desc" - Z-A
 
 # Funkcija, kas atjauno sarakstu un šķiro to pēc datuma
 def update_view_trainings():
@@ -234,7 +235,36 @@ def update_view_trainings():
     for training in sorted_trainings:
         view_list.insert(tk.END, f"{training['datums']} - {training['vingrinājums']}")
 
-# Funkcija, kas pārslēdz šķirošanas secību un atjauno sarakstu
+# Funkcija, kas pārslēdz šķirošanas secību pēc nosaukuma (A-Z/Z-A)
+def toggle_alphabetical_order():
+    global alphabetical_order
+    # Mainām šķirošanas secību
+    if alphabetical_order == "asc":
+        alphabetical_order = "desc"
+        alphabetical_sort_button.config(text="📚 Sortēt no Z-A")  # Mainām pogas tekstu
+    else:
+        alphabetical_order = "asc"
+        alphabetical_sort_button.config(text="📚 Sortēt no A-Z")  # Mainām pogas tekstu
+    
+    # Atjaunojam treniņu sarakstu pēc jaunā secības
+    update_alphabetical_sort()
+
+# Funkcija, kas atjauno sarakstu un šķiro to pēc nosaukuma
+def update_alphabetical_sort():
+    all_trainings = view_trainings()  # Šeit jābūt tavai funkcijai, kas iegūst visus treniņus
+
+    # Atkarībā no šķirošanas secības, šķirojam treniņus pēc nosaukuma
+    if alphabetical_order == "desc":
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['vingrinājums'], reverse=True)
+    else:
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['vingrinājums'])
+
+    # Ievieto treniņus sarakstā
+    view_list.delete(0, tk.END)
+    for training in sorted_trainings:
+        view_list.insert(tk.END, f"{training['datums']} - {training['vingrinājums']}")
+
+# Funkcija, kas pārslēdz šķirošanas secību pēc datuma (asc/desc)
 def toggle_sort_order():
     global sort_order
     # Mainām šķirošanas secību
@@ -251,13 +281,17 @@ view_list = tk.Listbox(view_frame, width=50, height=10)
 view_list.pack(pady=10)
 
 # Izveido pogu "Sortēt pēc datuma"
-sort_button = ttk.Button(view_frame, text="📅 Sortēt pēc datuma", command=toggle_sort_order)
-sort_button.pack(pady=10)
+date_sort_button = ttk.Button(view_frame, text="📅 Sortēt pēc datuma", command=toggle_sort_order)
+date_sort_button.pack(pady=5)
+
+# Izveido pogu "Sortēt pēc nosaukuma A-Z/Z-A"
+alphabetical_sort_button = ttk.Button(view_frame, text="📚 Sortē no A-Z", command=toggle_alphabetical_order)
+alphabetical_sort_button.pack(pady=5)
 
 # Atjaunojam sarakstu sākotnēji
 update_view_trainings()
 
-# Atgriešanās poga (ja nepieciešams)
+# Izveido atpakaļ pogu
 create_back_button(view_frame)
 
 
