@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from functions import add_training, view_trainings, edit_training, delete_training, show_statistics, search_trainings, get_recommendation
+from datetime import datetime, timedelta
+import numpy as np
 
 # 🌟 Galvenais logs
 window = tk.Tk()
@@ -92,55 +96,80 @@ create_back_button(add_frame)
 # ✏ Rediģēt treniņu
 ttk.Label(edit_frame, text="✏ Rediģēt treniņu", font=("Arial", 16, "bold")).pack(pady=10)
 
-def update_training_list():
-    all_trainings = view_trainings()
-    training_list.delete(0, tk.END)
-    for index, training in enumerate(all_trainings):
-        training_list.insert(tk.END, f"ID: {index + 1}, {training['datums']} - {training['vingrinājums']}")
-
-training_list = tk.Listbox(edit_frame, width=50, height=10)
-training_list.pack(pady=10)
-update_training_list()
-
-def on_select_training(event):
-    selected_index = training_list.curselection()
+# Funkcija, kas tiks izsaukta, kad lietotājs izvēlēsies treniņu no saraksta
+def on_select_edit_training(event):
+    selected_index = edit_training_list.curselection()  # Atrod izvēlēto treniņu
     if selected_index:
         selected_index = selected_index[0]
-        selected_training = view_trainings()[selected_index]
-        entries["📅 Datums (YYYY-MM-DD)"].delete(0, tk.END)
-        entries["📅 Datums (YYYY-MM-DD)"].insert(0, selected_training["datums"])
-        entries["🏋 Vingrinājums"].delete(0, tk.END)
-        entries["🏋 Vingrinājums"].insert(0, selected_training["vingrinājums"])
-        entries["🔢 Komplekti"].delete(0, tk.END)
-        entries["🔢 Komplekti"].insert(0, selected_training["komplekts"])
-        entries["🔁 Atkārtojumi"].delete(0, tk.END)
-        entries["🔁 Atkārtojumi"].insert(0, selected_training["atkārtojumi"])
-        entries["🏋‍♂️ Svars (kg)"].delete(0, tk.END)
-        entries["🏋‍♂️ Svars (kg)"].insert(0, selected_training["svars"])
-        entries["📝 Piezīmes"].delete(0, tk.END)
-        entries["📝 Piezīmes"].insert(0, selected_training["piezīmes"])
+        selected_training = view_trainings()[selected_index]  # Skatāmies treniņus
+        open_edit_window(selected_training)  # Atveram rediģēšanas logu
 
-training_list.bind("<ButtonRelease-1>", on_select_training)
+# Izveido sarakstu ar treniņiem
+edit_training_list = tk.Listbox(edit_frame, width=50, height=10)
+edit_training_list.pack(pady=10)
 
-def edit_selected_training():
-    selected_index = training_list.curselection()
-    if not selected_index:
-        messagebox.showerror("Kļūda", "Lūdzu izvēlieties treniņu, kuru vēlaties rediģēt!")
-        return
-    selected_index = selected_index[0]
-    selected_training = view_trainings()[selected_index]
-    edit_training(
-        selected_training["id"],
-        entries["📅 Datums (YYYY-MM-DD)"].get(),
-        entries["🏋 Vingrinājums"].get(),
-        entries["🔢 Komplekti"].get(),
-        entries["🔁 Atkārtojumi"].get(),
-        entries["🏋‍♂️ Svars (kg)"].get(),
-        entries["📝 Piezīmes"].get()
-    )
+# Funkcija, kas atjauno sarakstu un pievieno jaunas vērtības
+def update_edit_training_list():
+    all_trainings = view_trainings()
+    edit_training_list.delete(0, tk.END)
+    for index, training in enumerate(all_trainings):
+        edit_training_list.insert(tk.END, f"ID: {training['id']}, {training['datums']} - {training['vingrinājums']}")
 
-ttk.Button(edit_frame, text="✏ Rediģēt treniņu", command=edit_selected_training).pack(pady=10)
-create_back_button(edit_frame)
+# Pievienot notikumu: dubultklikšķis uz treniņa saraksta
+edit_training_list.bind("<Double-1>", on_select_edit_training)
+update_edit_training_list()
+
+# Atpakaļ poga galvenajā rediģēšanas rāmī
+def create_back_button(frame):
+    ttk.Button(frame, text="⬅ Atpakaļ", command=lambda: show_frame(home_frame), width=15).pack(pady=10)
+
+create_back_button(edit_frame)  # Šeit pievienojam atpakaļ pogu rediģēšanas rāmim
+
+
+# Funkcija, lai atvērtu rediģēšanas logu
+def open_edit_window(training):
+    # Izveido jaunu top-level logu
+    edit_window = tk.Toplevel()
+    edit_window.title(f"Rediģēt treniņu: {training['datums']} - {training['vingrinājums']}")
+
+    # Dizains
+    edit_frame = ttk.Frame(edit_window, padding=20)
+    edit_frame.grid(row=0, column=0)
+
+    # Etiķetes un lauki
+    labels = ["Datums", "Vingrinājums", "Komplekts", "Atkārtojumi", "Svars", "Piezīmes"]
+    keys = ["datums", "vingrinājums", "komplekts", "atkārtojumi", "svars", "piezīmes"]
+    entries = {}
+
+    for i, (label, key) in enumerate(zip(labels, keys)):
+        tk.Label(edit_frame, text=label, font=("Arial", 12)).grid(row=i, column=0, padx=5, pady=5, sticky="e")
+        entry = ttk.Entry(edit_frame, width=30)
+        entry.insert(0, training[key])  # Ieliek esošo vērtību
+        entry.grid(row=i, column=1, padx=5, pady=5)
+        entries[key] = entry  # Saglabājam laukus, lai vēlāk piekļūtu tiem
+
+    # Funkcija, lai saglabātu izmaiņas
+    def save_changes():
+        updated_values = {key: entries[key].get() for key in keys}
+        print("Saglabātie dati:", updated_values)  # Izdrukājam saglabātos datus
+        # Nododam visus atjauninātos datus uz edit_training funkciju
+        edit_training(training["id"], **updated_values)  # Saglabājam izmaiņas treniņā
+        update_edit_training_list()  # Atjaunojam sarakstu
+        messagebox.showinfo("Veiksmīgi", "Treniņš veiksmīgi rediģēts!")  # Paziņojums, ka izmaiņas saglabātas
+        edit_window.destroy()  # Aizveram logu
+
+
+    # Poga, kas saglabā izmaiņas
+    save_button = ttk.Button(edit_frame, text="Saglabāt izmaiņas", command=save_changes)
+    save_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
+
+    # Poga "Atpakaļ"
+    back_button = ttk.Button(edit_frame, text="Atpakaļ", command=edit_window.destroy, width=15)
+    back_button.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
+
+
+
+
 
 # 🗑 Dzēst treniņu
 ttk.Label(delete_frame, text="🗑 Dzēst treniņu", font=("Arial", 16, "bold")).pack(pady=10)
@@ -191,29 +220,270 @@ create_back_button(delete_frame)
 # Skatīt treniņus
 ttk.Label(view_frame, text="📅 Skatīt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
 
+# Saglabāsim šķirošanas secību
+sort_order = "desc"  # "desc" nozīmē no jaunākā uz vecāko, "asc" - otrādi
+alphabetical_order = "asc"  # "asc" nozīmē no A-Z, "desc" - Z-A
+
+# Funkcija, kas atjauno sarakstu un šķiro to pēc datuma
 def update_view_trainings():
-    all_trainings = view_trainings()
+    all_trainings = view_trainings()  # Šeit jābūt tavai funkcijai, kas iegūst visus treniņus
+
+    # Atkarībā no šķirošanas secības, šķirojam treniņus
+    if sort_order == "desc":
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['datums'], reverse=True)
+    else:
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['datums'])
+
+    # Ievieto treniņus sarakstā
     view_list.delete(0, tk.END)
-    for training in all_trainings:
+    for training in sorted_trainings:
         view_list.insert(tk.END, f"{training['datums']} - {training['vingrinājums']}")
 
+# Funkcija, kas pārslēdz šķirošanas secību pēc nosaukuma (A-Z/Z-A)
+def toggle_alphabetical_order():
+    global alphabetical_order
+    # Mainām šķirošanas secību
+    if alphabetical_order == "asc":
+        alphabetical_order = "desc"
+        alphabetical_sort_button.config(text="📚 Sortēt no Z-A")  # Mainām pogas tekstu
+    else:
+        alphabetical_order = "asc"
+        alphabetical_sort_button.config(text="📚 Sortēt no A-Z")  # Mainām pogas tekstu
+    
+    # Atjaunojam treniņu sarakstu pēc jaunā secības
+    update_alphabetical_sort()
+
+# Funkcija, kas atjauno sarakstu un šķiro to pēc nosaukuma
+def update_alphabetical_sort():
+    all_trainings = view_trainings()  # Šeit jābūt tavai funkcijai, kas iegūst visus treniņus
+
+    # Atkarībā no šķirošanas secības, šķirojam treniņus pēc nosaukuma
+    if alphabetical_order == "desc":
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['vingrinājums'], reverse=True)
+    else:
+        sorted_trainings = sorted(all_trainings, key=lambda x: x['vingrinājums'])
+
+    # Ievieto treniņus sarakstā
+    view_list.delete(0, tk.END)
+    for training in sorted_trainings:
+        view_list.insert(tk.END, f"{training['datums']} - {training['vingrinājums']}")
+
+# Funkcija, kas pārslēdz šķirošanas secību pēc datuma (asc/desc)
+def toggle_sort_order():
+    global sort_order
+    # Mainām šķirošanas secību
+    if sort_order == "desc":
+        sort_order = "asc"
+    else:
+        sort_order = "desc"
+    
+    # Atjaunojam treniņu sarakstu pēc jaunā secības
+    update_view_trainings()
+
+# Izveido treniņu sarakstu
 view_list = tk.Listbox(view_frame, width=50, height=10)
 view_list.pack(pady=10)
+
+# Izveido pogu "Sortēt pēc datuma"
+date_sort_button = ttk.Button(view_frame, text="📅 Sortēt pēc datuma", command=toggle_sort_order)
+date_sort_button.pack(pady=5)
+
+# Izveido pogu "Sortēt pēc nosaukuma A-Z/Z-A"
+alphabetical_sort_button = ttk.Button(view_frame, text="📚 Sortē no A-Z", command=toggle_alphabetical_order)
+alphabetical_sort_button.pack(pady=5)
+
+# Atjaunojam sarakstu sākotnēji
 update_view_trainings()
 
+# Izveido atpakaļ pogu
 create_back_button(view_frame)
 
-# Statistika
+
+# Funkcija, kas tiek izsaukta, kad tiek izvēlēts treniņš no saraksta
+def on_select_view_training(event):
+    selected_index = view_list.curselection()  # Atrod izvēlēto treniņu
+    if selected_index:
+        selected_index = selected_index[0]
+        selected_training = view_trainings()[selected_index]  # Skatāmies treniņus
+        show_training_details(selected_training)  # Parādām treniņa detaļas
+
+# Funkcija, lai parādītu treniņa informāciju
+def show_training_details(training):
+    details_window = tk.Toplevel(window)
+    details_window.title(f"Treniņš: {training['datums']} - {training['vingrinājums']}")
+
+    # Pievienojam treniņa informāciju
+    details_label = f"Datums: {training['datums']}\n"
+    details_label += f"Vingrinājums: {training['vingrinājums']}\n"
+    details_label += f"Komplekts: {training['komplekts']}\n"
+    details_label += f"Atkārtojumi: {training['atkārtojumi']}\n"
+    details_label += f"Svars: {training['svars']} kg\n"
+    details_label += f"Piezīmes: {training['piezīmes']}"
+
+    ttk.Label(details_window, text=details_label, font=("Arial", 12)).pack(pady=20)
+
+    # Poga aizvērt logu
+    ttk.Button(details_window, text="Aizvērt", command=details_window.destroy).pack(pady=10)
+
+# Atjauninām sarakstu, lai parādītu treniņus un pievienojam notikumu, lai varētu izvēlēties treniņu
+view_list.bind("<Double-1>", on_select_view_training)
+
+
+## Statistika
+
+
+
+def create_new_window(title, fig):
+    # Izveidojam jaunu logu
+    new_window = tk.Toplevel()
+    new_window.title(title)
+    
+    # Zīmējam matplotlib diagrammu jaunajā logā
+    canvas = FigureCanvasTkAgg(fig, master=new_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(pady=20)
+    
+    # Poga, lai aizvērtu logu
+    ttk.Button(new_window, text="Aizvērt", command=new_window.destroy).pack(pady=10)
+
+
 ttk.Label(stats_frame, text="📊 Statistika", font=("Arial", 16, "bold")).pack(pady=10)
 
-def show_stats():
-    show_statistics()
+# Funkcijas, kas tiks izsauktas, kad tiek nospiestas pogas
+def show_monthly_chart():
+    # Iegūstam visus treniņus
+    all_trainings = view_trainings()
+    
+    # Sagatavojam datus mēneša analīzei
+    months = []
+    training_count = {}
 
-ttk.Button(stats_frame, text="📊 Skatīt statistiku", command=show_stats).pack(pady=10)
-create_back_button(stats_frame)
+    for training in all_trainings:
+        # Iegūstam mēnesi no datuma
+        date = datetime.strptime(training['datums'], "%Y-%m-%d")
+        month_year = date.strftime("%Y-%m")  # Piemēram, "2023-04"
+        
+        if month_year not in months:
+            months.append(month_year)
+            training_count[month_year] = 0
+        training_count[month_year] += 1
+
+    # Sagatavojam datus diagrammai
+    sorted_months = sorted(training_count.keys())
+    counts = [training_count[month] for month in sorted_months]
+
+    # Zīmējam diagrammu
+    fig, ax = plt.subplots()
+    ax.bar(sorted_months, counts, color='skyblue')
+    ax.set_title("Treniņu skaits pa mēnešiem")
+    ax.set_xlabel("Mēnesis")
+    ax.set_ylabel("Treniņu skaits")
+    ax.tick_params(axis='x', rotation=45)
+
+    # Atveram diagrammu jaunā logā
+    create_new_window("Mēneša Diagramma", fig)
+
+
+def show_weekly_chart():
+    # Iegūstam visus treniņus
+    all_trainings = view_trainings()
+
+    # Sagatavojam datus nedēļas analīzei
+    weeks = []
+    training_count = {}
+
+    for training in all_trainings:
+        # Iegūstam datumu un pārveidojam uz nedēļu (nedēļas sākums)
+        date = datetime.strptime(training['datums'], "%Y-%m-%d")
+        week_start = date - timedelta(days=date.weekday())  # Nedēļas sākums (pirmdiena)
+        week_str = week_start.strftime("%Y-%m-%d")  # Piemēram, "2023-04-03" (pirmdiena)
+        
+        if week_str not in weeks:
+            weeks.append(week_str)
+            training_count[week_str] = 0
+        training_count[week_str] += 1
+
+    # Sagatavojam datus diagrammai
+    sorted_weeks = sorted(training_count.keys())
+    counts = [training_count[week] for week in sorted_weeks]
+
+    # Zīmējam diagrammu
+    fig, ax = plt.subplots()
+    ax.bar(sorted_weeks, counts, color='lightcoral')
+    ax.set_title("Treniņu skaits pa nedēļām")
+    ax.set_xlabel("Nedēļa (pirmdiena)")
+    ax.set_ylabel("Treniņu skaits")
+    ax.tick_params(axis='x', rotation=45)
+
+    # Atveram diagrammu jaunā logā
+    create_new_window("Nedēļas Diagramma", fig)
+
+
+def show_general_chart_by_weight():
+    # Iegūstam visus treniņus
+    all_trainings = view_trainings()
+
+    # Sagatavojam datus pēc svara
+    weight_count = {}
+
+    for training in all_trainings:
+        # Iegūstam svaru no treniņa
+        weight = training.get('svars')
+        
+        if weight is None:
+            continue  # Ja svara nav, tad izlaidīsim šo ierakstu
+
+        # Skaitām, cik reizes katrs svars parādās
+        if weight not in weight_count:
+            weight_count[weight] = 0
+        weight_count[weight] += 1
+
+    # Sagatavojam datus diagrammai
+    weights = list(weight_count.keys())
+    counts = list(weight_count.values())
+
+    # Zīmējam diagrammu
+    fig, ax = plt.subplots()
+    ax.bar(weights, counts, color='lightblue')
+    ax.set_title("Treniņu skaits pēc svara")
+    ax.set_xlabel("Svars (kg)")
+    ax.set_ylabel("Treniņu skaits")
+    ax.tick_params(axis='x', rotation=45)
+
+    # Atveram diagrammu jaunā logā
+    create_new_window("Vispārējā Diagramma pēc Svara", fig)
+
+def categorize_weights(weight):
+    if weight < 50:
+        return "<50 kg"
+    elif weight < 70:
+        return "50-70 kg"
+    elif weight < 90:
+        return "70-90 kg"
+    else:
+        return "90+ kg"
+
+
+def show_stats():
+    show_statistics()  # Parādām statistiku
+
+# Poga Mēneša diagramma
+ttk.Button(stats_frame, text="📊 Mēneša Diagramma", command=show_monthly_chart).pack(pady=5)
+
+# Poga Nedēļas diagramma
+ttk.Button(stats_frame, text="📊 Nedēļas Diagramma", command=show_weekly_chart).pack(pady=5)
+
+# Poga Vispārējā diagramma pēc svara
+ttk.Button(stats_frame, text="📊 Vispārējā Diagramma pēc Svara", command=show_general_chart_by_weight).pack(pady=5)
+
+# Poga Skatīt statistiku
+ttk.Button(stats_frame, text="📊 Skatīt statistiku", command=show_stats).pack(pady=5)
+
+create_back_button(stats_frame)  # Atpakaļ poga
+
 
 # Meklēšana
-ttk.Label(search_frame, text="🔍 Meklēt treniņus", font=("Arial", 16, "bold")).pack(pady=10)
+ttk.Label(search_frame, text="🔍 Meklēt treniņus pēc datuma(YYYY-MM-DD)", font=("Arial", 16, "bold")).pack(pady=10)
 
 def search_training():
     date = search_entry.get()
