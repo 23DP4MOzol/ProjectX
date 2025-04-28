@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakti</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html"><img src="src/img/main.png" alt="Logo"></a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#features">Funkcijas</a></li>
+                    <li><a href="index.html#experience">Pieredze</a></li>
+                    <li><a href="index.html#testimonials">Kopiena</a></li>
+                    <li><a href="index.html" class="cta-button">Sākt</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="contact" style="padding: 80px 20px;">
+        <div class="container">
+            <h2>Sazinies ar mums</h2>
+            <p style="margin-bottom: 30px;">Ja tev ir jautājumi vai ierosinājumi, droši raksti mums!</p>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="name">Vārds</label>
+                    <input type="text" id="name" name="from_name" required placeholder="Tavs vārds">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-pasts</label>
+                    <input type="email" id="email" name="from_email" required placeholder="Tavs e-pasts">
+                </div>
+                <div class="form-group">
+                    <label for="message">Ziņa</label>
+                    <textarea id="message" name="message" required placeholder="Tava ziņa" rows="6"></textarea>
+                </div>
+                <button type="submit" class="cta-button">Sūtīt</button>
+            </form>
+            
+            
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="privacy-terms.html#privacy">Privātums</a>
+                <a href="privacy-terms.html#terms">Noteikumi</a>
+                <a href="contact.html">Kontakti</a>
+            </div>
+            <p>&copy; 2025 Fitnesa lietotne. Visas tiesības aizsargātas.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script>
+      (function(){
+        emailjs.init("ISdCJ14yo3QFPJctf");
+      })();
+
+      document.getElementById('contact-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        emailjs.send("service_68z5iyl","template_7i58mue", {
+          from_name: document.getElementById('name').value,
+          from_email: document.getElementById('email').value,
+          message: document.getElementById('message').value
+        }).then(function() {
+          alert('Ziņa veiksmīgi nosūtīta!');
+          document.getElementById('contact-form').reset();
+        }, function(error) {
+          console.log('FAILED...', error);
+          alert('Kļūda: ' + JSON.stringify(error));
+        });
+      });
+    </script>
+</body>
+</html>

@@ -280,9 +280,11 @@ header nav ul li a.cta-button:hover {
 }
 
 #hero .hero-image img {
-    max-width: 380px;
     width: 100%;
+    max-width: 400px;
     height: auto;
+    max-height: 400px;
+    object-fit: cover; 
     z-index: 0;
     border-radius: 15px;
 }
@@ -324,9 +326,11 @@ header nav ul li a.cta-button:hover {
 }
 
 .feature-card img {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover; 
 }
 
 .feature-card h3 {
@@ -578,4 +582,129 @@ footer p {
 #back-btn:hover {
     background-color: #8da7d8;
     transform: translateY(-2px);
+}
+
+
+/* Contact Form Section */
+#contact .container {
+    max-width: 400px;
+    width: 90%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 100;
+    margin: 0 auto;
+}
+
+#contact h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#contact p {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+#contact .form-group {
+    margin-bottom: 15px;
+}
+
+#contact .form-group label {
+    font-weight: 600;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#contact .form-group input,
+#contact .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+#contact .form-group textarea {
+    resize: vertical;
+}
+
+#contact .cta-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #a0c7ff;
+    border-radius: 30px;
+    text-align: center;
+    color: #111;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(160, 199, 255, 0.6);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+#contact .cta-button:hover {
+    background-color: #8da7d8;
+    transform: translateY(-2px);
+}
+
+
+/* Privacy and Terms Section - Improved */
+#privacy, #terms {
+    max-width: 900px;
+    width: 90%;
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    margin: 60px auto;
+    color: #333;
+    animation: fadeIn 1s ease;
+}
+
+#privacy h2, #terms h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 36px;
+    color: #111;
+    font-weight: 700;
+}
+
+#privacy p, #terms p {
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.8;
+    color: #555;
+}
+
+#privacy ul, #terms ul {
+    margin-top: 20px;
+    padding-left: 25px;
+}
+
+#privacy ul li, #terms ul li {
+    margin-bottom: 12px;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+#privacy a, #terms a {
+    color: #4ca1af;
+    text-decoration: underline;
+}
+
+#privacy a:hover, #terms a:hover {
+    color: #2c3e50;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
