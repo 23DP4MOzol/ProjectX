@@ -40,15 +40,13 @@ def view_trainings():
     return load_trainings()
 
 # Funkcija treniņa datu rediģēšanai
-def edit_training(training_id, datums, vingrinajums, komplekts, atkārtojumi, svars, piezīmes):
-    # Iegūstam visus treniņus no datnes vai saraksta
-    all_trainings = load_trainings()  # Piemēram, ja dati ir saglabāti failā
-
-    # Atrodam treniņu pēc ID un atjaunojam tā datus
+def edit_training(training_id, datums, vingrinājums, komplekts, atkārtojumi, svars, piezīmes):
+    # Use the exact name as in your JSON file
+    all_trainings = load_trainings()
     for training in all_trainings:
         if training["id"] == training_id:
             training["datums"] = datums
-            training["vingrinājums"] = vingrinajums
+            training["vingrinājums"] = vingrinājums  # Ensure this matches your JSON key
             training["komplekts"] = komplekts
             training["atkārtojumi"] = atkārtojumi
             training["svars"] = svars
@@ -57,10 +55,10 @@ def edit_training(training_id, datums, vingrinajums, komplekts, atkārtojumi, sv
     else:
         print(f"Treniņš ar ID {training_id} netika atrasts.")
         return False
-    
-    # Saglabājam visus datus atpakaļ
     save_trainings(all_trainings)
-    return True  # Veiksmīgi saglabāts
+    return True
+
+
 
 # Dzēst treniņu
 def delete_training(training_id):
@@ -181,18 +179,22 @@ def open_edit_training_window(root, training_id):
 
     # Saglabāt izmaiņas
     def save_changes():
+        # Get the values from the entry fields
         new_datums = datums_entry.get()
-        new_vingrinajums = vingrinajums_entry.get()
+        new_vingrinajums = vingrinajums_entry.get()  # Ensure this matches the key in the JSON data
         new_komplekts = komplekts_entry.get()
         new_atkartojumi = atkārtojumi_entry.get()
         new_svars = svars_entry.get()
         new_piezimes = piezimes_entry.get()
 
-        # Nododam izmaiņas atpakaļ uz rediģēšanas funkciju
-        edit_training(training_id, new_datums, new_vingrinajums, new_komplekts, new_atkartojumi, new_svars, new_piezimes)
+        # Pass the values directly to edit_training, not as a dictionary
+        edit_training(training["id"], new_datums, new_vingrinajums, new_komplekts, new_atkartojumi, new_svars, new_piezimes)
 
+        # Show confirmation message and close the edit window
         messagebox.showinfo("Veiksmīgi saglabāts", "Treniņš veiksmīgi rediģēts!")
-        edit_window.destroy()  # Aizveram logu pēc saglabāšanas
+        edit_window.destroy()  # Close the edit window after saving
+
+
 
     # Saglabāšanas poga
     save_button = tk.Button(edit_window, text="Saglabāt", command=save_changes)
